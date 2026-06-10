@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Goodwill Christian College">
+  <defs>
+    <linearGradient id="gwRing" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4ade80"/>
+      <stop offset="100%" style="stop-color:#16a34a"/>
+    </linearGradient>
+  </defs>
+  <circle cx="60" cy="60" r="56" fill="url(#gwRing)"/>
+  <circle cx="60" cy="60" r="46" fill="#ffffff"/>
+  <text x="60" y="58" text-anchor="middle" font-family="Georgia, serif" font-size="32" font-weight="bold" fill="#16a34a">G</text>
+  <text x="60" y="82" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" font-weight="bold" fill="#0f172a">GOODWILL</text>
+</svg>

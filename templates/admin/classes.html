@@ -1,0 +1,58 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Classes{% endblock %}
+
+{% block sidebar %}
+{% include "admin/partials/sidebar.html" %}
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="adm-page-head">
+    <div>
+        <h2 class="tch-section-title" style="margin:0;">Class Management</h2>
+        <p class="adm-subtitle">Create classes, assign teachers, and enroll students</p>
+    </div>
+    <a href="{% url 'admin_class_create' %}" class="adm-btn adm-btn-primary">
+        <i class="bi bi-plus-circle"></i> Create Class
+    </a>
+</div>
+
+<section class="tch-panel adm-panel-spaced">
+    <div class="tch-panel-body">
+        <div class="adm-table-wrap">
+            <table class="adm-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Class</th>
+                        <th scope="col">Grade</th>
+                        <th scope="col">Section</th>
+                        <th scope="col">Subject</th>
+                        <th scope="col">Teachers</th>
+                        <th scope="col">Students</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cls in classes %}
+                    <tr>
+                        <td><strong>{{ cls.name }}</strong></td>
+                        <td>{{ cls.grade|default:"—" }}</td>
+                        <td>{{ cls.section|default:"—" }}</td>
+                        <td>{{ cls.subject|default:"—" }}</td>
+                        <td>{{ cls.assigned_teachers }}</td>
+                        <td>{{ cls.enrolled_count }}</td>
+                        <td>
+                            <a href="{% url 'admin_class_detail' cls.pk %}" class="adm-btn adm-btn-sm adm-btn-secondary">Manage</a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="adm-empty-cell">No classes yet. Create your first class to get started.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

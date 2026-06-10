@@ -1,0 +1,30 @@
+<aside class="tch-sidebar" id="tch-sidebar">
+    <p class="tch-side-label">Admin Menu</p>
+    <ul class="tch-side-nav">
+        <li>
+            <a href="{% url 'admin_dashboard' %}" class="{% if active_nav == 'dashboard' %}active{% endif %}">
+                <i class="bi bi-grid-1x2"></i> Dashboard
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'admin_users' %}" class="{% if active_nav == 'users' %}active{% endif %}">
+                <i class="bi bi-people"></i> User Management
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'admin_classes' %}" class="{% if active_nav == 'classes' %}active{% endif %}">
+                <i class="bi bi-collection"></i> Classes
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'admin_messages_compose' %}" class="{% if active_nav == 'messages' %}active{% endif %}">
+                <i class="bi bi-envelope"></i> Messages
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'admin_messages_history' %}" class="{% if active_nav == 'messages' %}active{% endif %}">
+                <i class="bi bi-clock-history"></i> Message History
+            </a>
+        </li>
+    </ul>
+</aside>

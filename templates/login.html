@@ -1,0 +1,123 @@
+{% extends "login_base.html" %}
+{% load static %}
+
+{% block title %}{{ role_label }} Login | Goodwill Christian College{% endblock %}
+
+{% block content %}
+<div class="erp-login-page">
+    <a href="{% url 'home' %}" class="erp-back-home" aria-label="Back to home">
+        <i class="bi bi-chevron-double-right" aria-hidden="true"></i> Back To Home
+    </a>
+
+    <header class="erp-brand">
+        <div class="erp-brand-logo">
+            <img src="{% static 'img/goodwill-logo.svg' %}" alt="Goodwill Christian College logo">
+        </div>
+        <h1>Goodwill Christian College For Women</h1>
+        <p class="erp-subtitle">College Management Portal</p>
+    </header>
+
+    <div class="erp-login-shell">
+        <ul class="erp-tabs" role="tablist" aria-label="Select login role">
+            <li role="presentation">
+                <a href="{% url 'login' %}?role=admin"
+                    class="erp-tab{% if active_role == 'admin' %} active{% endif %}"
+                    role="tab"
+                    aria-selected="{% if active_role == 'admin' %}true{% else %}false{% endif %}">
+                    <i class="bi bi-shield-lock" aria-hidden="true"></i>
+                    <span>ADMIN</span>
+                </a>
+            </li>
+            <li role="presentation">
+                <a href="{% url 'login' %}?role=lecturer"
+                    class="erp-tab{% if active_role == 'lecturer' %} active{% endif %}"
+                    role="tab"
+                    aria-selected="{% if active_role == 'lecturer' %}true{% else %}false{% endif %}">
+                    <i class="bi bi-person-video3" aria-hidden="true"></i>
+                    <span>LECTURERS</span>
+                </a>
+            </li>
+            <li role="presentation">
+                <a href="{% url 'login' %}?role=student"
+                    class="erp-tab{% if active_role == 'student' %} active{% endif %}"
+                    role="tab"
+                    aria-selected="{% if active_role == 'student' %}true{% else %}false{% endif %}">
+                    <i class="bi bi-mortarboard" aria-hidden="true"></i>
+                    <span>STUDENTS</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="erp-card">
+            {% if error %}
+            <div class="erp-alert-error" role="alert">
+                <i class="bi bi-exclamation-circle me-1"></i> {{ error }}
+            </div>
+            {% endif %}
+
+            <form method="POST" action="{% url 'login' %}" id="portal-login-form" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="login_role" id="login_role" value="{{ active_role }}">
+
+                <div class="erp-field">
+                    <label for="username">Username ID</label>
+                    <div class="erp-input-group">
+                        <i class="bi bi-person erp-input-icon" aria-hidden="true"></i>
+                        <input type="text" id="username" name="username" placeholder="Enter username"
+                            value="{{ username|default:'' }}" required autofocus autocomplete="username">
+                    </div>
+                </div>
+
+                <div class="erp-field">
+                    <label for="userpassword">Password</label>
+                    <div class="erp-input-group password-field">
+                        <i class="bi bi-lock erp-input-icon" aria-hidden="true"></i>
+                        <input type="password" id="userpassword" name="password"
+                            placeholder="Enter password" required autocomplete="current-password">
+                        <button type="button" class="erp-password-toggle" id="password-toggle"
+                            aria-label="Show password" aria-pressed="false">
+                            <i class="bi bi-eye" id="password-toggle-icon" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="erp-forgot">
+                    <a href="{% url 'home' %}#contact">Forgot Password? Click Here</a>
+                </div>
+
+                <button type="submit" class="erp-btn-login">
+                    <i class="bi bi-box-arrow-in-right me-2" aria-hidden="true"></i> Log In
+                </button>
+
+                <p class="erp-signing-hint">
+                    Signing in as <strong>{{ role_label }}</strong>
+                </p>
+
+                {% if demo_credentials %}
+                <div class="erp-demo-creds" aria-label="Demo login credentials">
+                    <p class="erp-demo-title">Demo credentials</p>
+                    <ul>
+                        {% for cred in demo_credentials %}
+                        <li>
+                            <span class="erp-demo-role">{{ cred.username|title }}</span>
+                            <span>{{ cred.username }} / {{ cred.password }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <footer class="erp-page-footer">
+        <a href="{% url 'home' %}" class="erp-return-link">
+            <i class="bi bi-house-door" aria-hidden="true"></i> Return to college website
+        </a>
+        <p class="erp-copyright">
+            <span>2026 &copy; Goodwill Christian College For Women</span><br>
+            All rights reserved. Bengaluru North University affiliated institution.
+        </p>
+    </footer>
+</div>
+{% endblock %}

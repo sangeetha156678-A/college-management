@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Dashboard{% endblock %} | GCCW Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/teacher-dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'css/admin-dashboard.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="teacher-dashboard-body">
+    <header class="tch-header">
+        <div class="tch-header-left">
+            <button type="button" class="tch-menu-toggle" id="tch-menu-toggle" aria-label="Open menu">
+                <i class="bi bi-list"></i>
+            </button>
+            <a href="{% url 'home' %}" class="tch-brand">GCCW</a>
+            <div class="tch-welcome">
+                <h1>{{ greeting }}, <span class="highlight">{{ admin_name }}</span></h1>
+                <p>Administration Portal · Goodwill Christian College For Women</p>
+            </div>
+        </div>
+        <div class="tch-header-right">
+            <button type="button" class="tch-icon-btn" aria-label="Notifications">
+                <i class="bi bi-bell"></i>
+            </button>
+            <a href="{% url 'logout' %}" class="tch-profile" title="Profile / Logout">
+                <img src="{% static 'img/default-avatar.svg' %}" alt="">
+                <span>{{ admin_short_name }}</span>
+            </a>
+        </div>
+    </header>
+
+    <div class="tch-shell">
+        {% block sidebar %}{% endblock %}
+        <main class="tch-main">
+            {% include "admin/partials/flash_messages.html" %}
+            {% block dashboard_content %}{% endblock %}
+        </main>
+    </div>
+
+    <div class="tch-overlay" id="tch-overlay"></div>
+    <div class="adm-modal-overlay" id="adm-modal-overlay" hidden>
+        <div class="adm-modal" role="dialog" aria-modal="true" aria-labelledby="adm-modal-title">
+            <h3 id="adm-modal-title">Confirm action</h3>
+            <p id="adm-modal-body">Are you sure?</p>
+            <div class="adm-modal-actions">
+                <button type="button" class="adm-btn adm-btn-ghost" id="adm-modal-cancel">Cancel</button>
+                <button type="button" class="adm-btn adm-btn-danger" id="adm-modal-confirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/admin-dashboard.js' %}"></script>
+    <script>
+        (function () {
+            var toggle = document.getElementById('tch-menu-toggle');
+            var sidebar = document.querySelector('.tch-sidebar');
+            var overlay = document.getElementById('tch-overlay');
+            if (!toggle || !sidebar) return;
+            function close() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('show');
+            }
+            toggle.addEventListener('click', function () {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('show');
+            });
+            overlay.addEventListener('click', close);
+        })();
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

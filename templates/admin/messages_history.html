@@ -1,0 +1,67 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Message History{% endblock %}
+
+{% block sidebar %}
+{% include "admin/partials/sidebar.html" %}
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="adm-page-head">
+    <div>
+        <h2 class="tch-section-title" style="margin:0;">Message History</h2>
+        <p class="adm-subtitle">Log of all sent messages</p>
+    </div>
+    <a href="{% url 'admin_messages_compose' %}" class="adm-btn adm-btn-primary">
+        <i class="bi bi-pencil-square"></i> Compose
+    </a>
+</div>
+
+<section class="tch-panel adm-panel-spaced">
+    <div class="tch-panel-body">
+        <div class="adm-table-wrap">
+            <table class="adm-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Subject</th>
+                        <th scope="col">Recipients</th>
+                        <th scope="col">Target</th>
+                        <th scope="col">Sent by</th>
+                        <th scope="col">Date / Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for msg in messages_page %}
+                    <tr>
+                        <td><strong>{{ msg.subject }}</strong></td>
+                        <td>{{ msg.recipient_count }}</td>
+                        <td>
+                            <span class="tch-badge info">{{ msg.get_target_type_display }}</span>
+                            {% if msg.target_class %}<span class="adm-muted"> · {{ msg.target_class.name }}</span>{% endif %}
+                        </td>
+                        <td>{{ msg.sent_by.display_name|default:"—" }}</td>
+                        <td class="adm-muted">{{ msg.sent_at|date:"M d, Y H:i" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="adm-empty-cell">No messages sent yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if messages_page.has_other_pages %}
+        <nav class="adm-pagination" aria-label="Message history pagination">
+            {% if messages_page.has_previous %}
+            <a href="?page={{ messages_page.previous_page_number }}">Previous</a>
+            {% endif %}
+            <span>Page {{ messages_page.number }} of {{ messages_page.paginator.num_pages }}</span>
+            {% if messages_page.has_next %}
+            <a href="?page={{ messages_page.next_page_number }}">Next</a>
+            {% endif %}
+        </nav>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

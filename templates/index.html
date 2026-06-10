@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Goodwill Christian College | Home{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="container">
+        <h1>Goodwill Christian College For Women</h1>
+        <p class="hero-sub">
+            Empowering young women through quality education. Affiliated to Bengaluru North University —
+            manage academics, attendance, fees, and campus life through our student portal.
+        </p>
+        <div class="hero-actions">
+            <a href="{% url 'login' %}" class="btn btn-primary">Student / Staff Login</a>
+            <a href="#courses" class="btn btn-outline">View Courses</a>
+        </div>
+    </div>
+</section>
+
+<section class="section section-alt" id="features">
+    <div class="container">
+        <div class="section-title">
+            <h2>Student Portal Features</h2>
+            <span class="title-line"></span>
+            <p>Everything you need for academic life — sign in to access your personalized dashboard.</p>
+        </div>
+        <div class="features-grid">
+            <a href="{% url 'login' %}" class="feature-card">
+                <div class="icon">&#128218;</div>
+                <h3>Syllabus &amp; Attendance</h3>
+                <p>View courses, track attendance percentages, and monitor your academic progress by semester.</p>
+                <span class="card-link">Sign in to access</span>
+                <span class="card-hint">Requires portal login</span>
+            </a>
+            <a href="{% url 'login' %}" class="feature-card">
+                <div class="icon">&#128197;</div>
+                <h3>Academic Calendar</h3>
+                <p>Stay updated on holidays, exams, events, and important academic dates throughout the year.</p>
+                <span class="card-link">Sign in to access</span>
+                <span class="card-hint">Requires portal login</span>
+            </a>
+            <a href="{% url 'login' %}" class="feature-card">
+                <div class="icon">&#128176;</div>
+                <h3>Fees &amp; Payments</h3>
+                <p>View fee structures, outstanding balances, installments, and download payment receipts online.</p>
+                <span class="card-link">Sign in to access</span>
+                <span class="card-hint">Requires portal login</span>
+            </a>
+            <a href="{% url 'login' %}" class="feature-card">
+                <div class="icon">&#128227;</div>
+                <h3>Announcements &amp; Bulletin</h3>
+                <p>Read campus announcements, bulletin board posts, and stay connected with college updates.</p>
+                <span class="card-link">Sign in to access</span>
+                <span class="card-hint">Requires portal login</span>
+            </a>
+            <a href="{% url 'login' %}" class="feature-card">
+                <div class="icon">&#128221;</div>
+                <h3>Assignments &amp; Assessment</h3>
+                <p>Access assignments, assessment schedules, and academic tasks assigned by faculty.</p>
+                <span class="card-link">Sign in to access</span>
+                <span class="card-hint">Requires portal login</span>
+            </a>
+            <a href="{% url 'login' %}" class="feature-card">
+                <div class="icon">&#127968;</div>
+                <h3>Hostel &amp; Facilities</h3>
+                <p>Manage hostel details, library records, leave requests, and other campus facilities.</p>
+                <span class="card-link">Sign in to access</span>
+                <span class="card-hint">Requires portal login</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="courses">
+    <div class="container">
+        <div class="section-title">
+            <h2>Courses Offered</h2>
+            <span class="title-line"></span>
+            <p>Programs offered at Goodwill Christian College for Women.</p>
+        </div>
+        <div class="courses-table-wrap">
+            <table class="courses-table">
+                <thead>
+                    <tr>
+                        <th>Programme</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>B.A</strong></td>
+                        <td>Optional English, Journalism, Psychology</td>
+                    </tr>
+                    <tr>
+                        <td><strong>B.A</strong></td>
+                        <td>Economics, Journalism, Psychology</td>
+                    </tr>
+                    <tr>
+                        <td><strong>B.Sc</strong></td>
+                        <td>Botany, Chemistry, Microbiology</td>
+                    </tr>
+                    <tr>
+                        <td><strong>B.Sc</strong></td>
+                        <td>Home Science, Economics, Psychology</td>
+                    </tr>
+                    <tr>
+                        <td><strong>B.Com, BCA, BBA</strong></td>
+                        <td>As per BNU regulations</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Languages offered</strong></td>
+                        <td>Kannada, Hindi, Urdu, Additional English</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p style="text-align: center; margin-top: 2rem;">
+            <a href="{% url 'login' %}" class="btn btn-secondary">Apply / Login to Portal</a>
+        </p>
+    </div>
+</section>
+
+<section class="section section-alt" id="contact">
+    <div class="container">
+        <div class="section-title">
+            <h2>Contact Us</h2>
+            <span class="title-line"></span>
+        </div>
+        <div class="contact-grid">
+            <div class="contact-item">
+                <h3>Phone</h3>
+                <p>080-41516793, 41100422, 7022905576<br>080-25567177</p>
+            </div>
+            <div class="contact-item">
+                <h3>Email</h3>
+                <p><a href="mailto:goodwillchristiancollege@gmail.com">goodwillchristiancollege@gmail.com</a></p>
+            </div>
+            <div class="contact-item">
+                <h3>Address</h3>
+                <p>10, Promenade Road, Frazer Town<br>Bengaluru, Karnataka 560005</p>
+            </div>
+            <div class="contact-item">
+                <h3>Website</h3>
+                <p><a href="https://goodwillchristiancollege.com" target="_blank" rel="noopener">www.goodwillchristiancollege.com</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

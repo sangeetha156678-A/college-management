@@ -1,0 +1,98 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Compose Message{% endblock %}
+
+{% block sidebar %}
+{% include "admin/partials/sidebar.html" %}
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="adm-page-head">
+    <div>
+        <h2 class="tch-section-title" style="margin:0;">Compose Message</h2>
+        <p class="adm-subtitle">Send email notifications to teachers and students</p>
+    </div>
+    <a href="{% url 'admin_messages_history' %}" class="adm-btn adm-btn-ghost">
+        <i class="bi bi-clock-history"></i> Message history
+    </a>
+</div>
+
+<section class="tch-panel adm-panel-spaced adm-form-panel">
+    <div class="tch-panel-body">
+        <form method="post" novalidate id="adm-compose-form">
+            {% csrf_token %}
+            <div class="adm-form-grid adm-form-grid-1">
+                <div class="adm-field">
+                    <label for="id_subject">Subject</label>
+                    {{ form.subject }}
+                    {% if form.subject.errors %}<span class="adm-field-error">{{ form.subject.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="adm-field">
+                    <label for="id_body">Message body</label>
+                    {{ form.body }}
+                    {% if form.body.errors %}<span class="adm-field-error">{{ form.body.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="adm-field">
+                    <label for="id_target_type">Recipients</label>
+                    {{ form.target_type }}
+                </div>
+            </div>
+
+            <div id="target-individual" class="adm-target-panel" hidden>
+                <div class="adm-field">
+                    <label for="id_individual_user">{{ form.individual_user.label }}</label>
+                    {{ form.individual_user }}
+                    {% if form.individual_user.errors %}<span class="adm-field-error">{{ form.individual_user.errors.0 }}</span>{% endif %}
+                </div>
+            </div>
+
+            <div id="target-class" class="adm-target-panel" hidden>
+                <div class="adm-field">
+                    <label for="id_target_class">{{ form.target_class.label }}</label>
+                    {{ form.target_class }}
+                    {% if form.target_class.errors %}<span class="adm-field-error">{{ form.target_class.errors.0 }}</span>{% endif %}
+                </div>
+            </div>
+
+            <div id="target-custom" class="adm-target-panel" hidden>
+                <div class="adm-field">
+                    <label for="id_custom_recipients">{{ form.custom_recipients.label }}</label>
+                    {{ form.custom_recipients }}
+                    <p class="adm-hint">Hold Ctrl (Windows) or Cmd (Mac) to select multiple.</p>
+                    {% if form.custom_recipients.errors %}<span class="adm-field-error">{{ form.custom_recipients.errors.0 }}</span>{% endif %}
+                </div>
+            </div>
+
+            <div class="adm-form-actions">
+                <button type="submit" class="adm-btn adm-btn-primary adm-confirm-btn"
+                    data-confirm-title="Send message?"
+                    data-confirm-body="This will send email notifications to all selected recipients.">
+                    <i class="bi bi-send"></i> Send Message
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    var targetType = document.getElementById('id_target_type');
+    var panels = {
+        individual: document.getElementById('target-individual'),
+        class: document.getElementById('target-class'),
+        custom: document.getElementById('target-custom'),
+    };
+    if (!targetType) return;
+    function toggle() {
+        var val = targetType.value;
+        panels.individual.hidden = val !== 'individual';
+        panels.class.hidden = val !== 'class';
+        panels.custom.hidden = val !== 'custom';
+    }
+    targetType.addEventListener('change', toggle);
+    toggle();
+})();
+</script>
+{% endblock %}

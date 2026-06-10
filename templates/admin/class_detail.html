@@ -1,0 +1,121 @@
+{% extends "admin_base.html" %}
+
+{% block title %}{{ college_class.name }}{% endblock %}
+
+{% block sidebar %}
+{% include "admin/partials/sidebar.html" %}
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="adm-page-head">
+    <div>
+        <h2 class="tch-section-title" style="margin:0;">{{ college_class.name }}</h2>
+        <p class="adm-subtitle">
+            {% if college_class.grade %}{{ college_class.grade }}{% endif %}
+            {% if college_class.section %} · Section {{ college_class.section }}{% endif %}
+            {% if college_class.subject %} · {{ college_class.subject }}{% endif %}
+        </p>
+    </div>
+    <a href="{% url 'admin_classes' %}" class="adm-btn adm-btn-ghost">
+        <i class="bi bi-arrow-left"></i> All classes
+    </a>
+</div>
+
+<div class="tch-grid-2">
+    <section class="tch-panel">
+        <div class="tch-panel-head">
+            <h3><i class="bi bi-person-badge"></i> Assigned Teachers</h3>
+        </div>
+        <div class="tch-panel-body">
+            {% for teacher in college_class.teachers.all %}
+            <div class="tch-list-item adm-list-actions">
+                <div>
+                    <strong>{{ teacher.user.display_name }}</strong>
+                    <span class="adm-muted"> · {{ teacher.subject|default:"—" }}</span>
+                </div>
+                <div class="adm-action-group">
+                    {% if all_classes %}
+                    <form method="post" action="{% url 'admin_class_reassign_teacher' college_class.pk teacher.pk %}" class="adm-inline-form adm-reassign-form">
+                        {% csrf_token %}
+                        <select name="target_class_id" class="adm-input adm-input-inline" required>
+                            <option value="">Reassign to…</option>
+                            {% for c in all_classes %}
+                            <option value="{{ c.pk }}">{{ c.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="adm-btn adm-btn-sm adm-btn-secondary adm-confirm-btn"
+                            data-confirm-title="Reassign teacher?"
+                            data-confirm-body="This teacher will be moved to the selected class.">
+                            Reassign
+                        </button>
+                    </form>
+                    {% endif %}
+                    <form method="post" action="{% url 'admin_class_remove_teacher' college_class.pk teacher.pk %}" class="adm-inline-form">
+                        {% csrf_token %}
+                        <button type="submit" class="adm-btn adm-btn-sm adm-btn-danger adm-confirm-btn"
+                            data-confirm-title="Remove teacher?"
+                            data-confirm-body="Remove {{ teacher.user.display_name }} from this class?">
+                            Remove
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% empty %}
+            <p class="adm-empty">No teachers assigned yet.</p>
+            {% endfor %}
+
+            {% if available_teachers %}
+            <form method="post" action="{% url 'admin_class_assign_teachers' college_class.pk %}" class="adm-assign-form">
+                {% csrf_token %}
+                <label class="adm-field-label">Add teachers</label>
+                <select name="teacher_ids" class="adm-input adm-multiselect" multiple size="4">
+                    {% for teacher in available_teachers %}
+                    <option value="{{ teacher.pk }}">{{ teacher.user.display_name }} — {{ teacher.subject|default:"—" }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="adm-btn adm-btn-primary adm-btn-sm">Assign Selected</button>
+            </form>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="tch-panel">
+        <div class="tch-panel-head">
+            <h3><i class="bi bi-mortarboard"></i> Enrolled Students</h3>
+        </div>
+        <div class="tch-panel-body">
+            {% for student in college_class.students.all %}
+            <div class="tch-list-item adm-list-actions">
+                <div>
+                    <strong>{{ student.user.display_name }}</strong>
+                    <span class="adm-muted"> · {{ student.course|default:"—" }}</span>
+                </div>
+                <form method="post" action="{% url 'admin_class_remove_student' college_class.pk student.pk %}" class="adm-inline-form">
+                    {% csrf_token %}
+                    <button type="submit" class="adm-btn adm-btn-sm adm-btn-danger adm-confirm-btn"
+                        data-confirm-title="Remove student?"
+                        data-confirm-body="Remove {{ student.user.display_name }} from this class?">
+                        Remove
+                    </button>
+                </form>
+            </div>
+            {% empty %}
+            <p class="adm-empty">No students enrolled yet.</p>
+            {% endfor %}
+
+            {% if available_students %}
+            <form method="post" action="{% url 'admin_class_enroll_students' college_class.pk %}" class="adm-assign-form">
+                {% csrf_token %}
+                <label class="adm-field-label">Enroll students</label>
+                <select name="student_ids" class="adm-input adm-multiselect" multiple size="4">
+                    {% for student in available_students %}
+                    <option value="{{ student.pk }}">{{ student.user.display_name }} — {{ student.course|default:"—" }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="adm-btn adm-btn-primary adm-btn-sm">Enroll Selected</button>
+            </form>
+            {% endif %}
+        </div>
+    </section>
+</div>
+{% endblock %}

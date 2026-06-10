@@ -1,0 +1,10 @@
+{% if messages %}
+<div class="adm-alerts" role="status">
+    {% for message in messages %}
+    <div class="adm-alert adm-alert-{{ message.tags|default:'info' }}">
+        <i class="bi bi-{% if message.tags == 'error' %}exclamation-circle{% elif message.tags == 'success' %}check-circle{% elif message.tags == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+        <span>{{ message }}</span>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}

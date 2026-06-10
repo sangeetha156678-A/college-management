@@ -1,0 +1,139 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block sidebar %}
+{% include "admin/partials/sidebar.html" %}
+{% endblock %}
+
+{% block dashboard_content %}
+<section aria-labelledby="stats-heading">
+    <h2 class="tch-section-title" id="stats-heading">Overview <span>Institution summary</span></h2>
+    <div class="tch-stats adm-stats-5">
+        <article class="tch-stat-card blue">
+            <div class="tch-stat-top">
+                <div class="tch-stat-icon"><i class="bi bi-person-badge"></i></div>
+            </div>
+            <div class="tch-stat-count">{{ stats.teachers }}</div>
+            <div class="tch-stat-label">Teachers</div>
+            <a href="{% url 'admin_users' %}?role=teacher" class="tch-stat-btn">Manage</a>
+        </article>
+        <article class="tch-stat-card purple">
+            <div class="tch-stat-top">
+                <div class="tch-stat-icon"><i class="bi bi-mortarboard"></i></div>
+            </div>
+            <div class="tch-stat-count">{{ stats.students }}</div>
+            <div class="tch-stat-label">Students</div>
+            <a href="{% url 'admin_users' %}?role=student" class="tch-stat-btn">Manage</a>
+        </article>
+        <article class="tch-stat-card green">
+            <div class="tch-stat-top">
+                <div class="tch-stat-icon"><i class="bi bi-collection"></i></div>
+            </div>
+            <div class="tch-stat-count">{{ stats.classes }}</div>
+            <div class="tch-stat-label">Classes</div>
+            <a href="{% url 'admin_classes' %}" class="tch-stat-btn">View All</a>
+        </article>
+        <article class="tch-stat-card orange">
+            <div class="tch-stat-top">
+                <div class="tch-stat-icon"><i class="bi bi-check-circle"></i></div>
+            </div>
+            <div class="tch-stat-count">{{ stats.active_accounts }}</div>
+            <div class="tch-stat-label">Active Accounts</div>
+            <a href="{% url 'admin_users' %}?status=active" class="tch-stat-btn">View</a>
+        </article>
+        <article class="tch-stat-card pink">
+            <div class="tch-stat-top">
+                <div class="tch-stat-icon"><i class="bi bi-pause-circle"></i></div>
+            </div>
+            <div class="tch-stat-count">{{ stats.inactive_accounts }}</div>
+            <div class="tch-stat-label">Inactive Accounts</div>
+            <a href="{% url 'admin_users' %}?status=inactive" class="tch-stat-btn">View</a>
+        </article>
+    </div>
+</section>
+
+<section aria-labelledby="actions-heading">
+    <h2 class="tch-section-title" id="actions-heading">Quick Actions</h2>
+    <div class="tch-actions">
+        <a href="{% url 'admin_user_create' %}" class="tch-action-card">
+            <div class="tch-action-icon"><i class="bi bi-person-plus"></i></div>
+            <div>
+                <h3>Create Account</h3>
+                <p>Add a new teacher or student</p>
+            </div>
+        </a>
+        <a href="{% url 'admin_class_create' %}" class="tch-action-card">
+            <div class="tch-action-icon"><i class="bi bi-plus-circle"></i></div>
+            <div>
+                <h3>Create Class</h3>
+                <p>Set up a new class section</p>
+            </div>
+        </a>
+        <a href="{% url 'admin_messages_compose' %}" class="tch-action-card">
+            <div class="tch-action-icon"><i class="bi bi-send"></i></div>
+            <div>
+                <h3>Send Message</h3>
+                <p>Email teachers or students</p>
+            </div>
+        </a>
+    </div>
+</section>
+
+<div class="tch-grid-2">
+    <section class="tch-panel">
+        <div class="tch-panel-head">
+            <h3><i class="bi bi-activity"></i> Recent Activity</h3>
+        </div>
+        <div class="tch-panel-body">
+            {% for log in recent_activity %}
+            <div class="tch-list-item">
+                <span>{{ log.description }}</span>
+                <span class="tch-badge info">{{ log.created_at|date:"M d, H:i" }}</span>
+            </div>
+            {% empty %}
+            <p class="adm-empty">No activity yet.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="tch-panel">
+        <div class="tch-panel-head">
+            <h3><i class="bi bi-bar-chart"></i> Enrollment by Class</h3>
+            <a href="{% url 'admin_classes' %}">View all</a>
+        </div>
+        <div class="tch-panel-body">
+            {% for cls in class_stats %}
+            <div class="tch-progress-row">
+                <div class="tch-progress-label">
+                    <span>{{ cls.name }}</span>
+                    <span>{{ cls.enrolled_count }} students · {{ cls.assigned_teachers }} teacher{{ cls.assigned_teachers|pluralize }}</span>
+                </div>
+                <div class="tch-progress-track">
+                    <div class="tch-progress-fill" style="width: {% widthratio cls.enrolled_count 50 100 %}%; max-width: 100%;"></div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="adm-empty">No classes created yet.</p>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+
+<section class="tch-panel">
+    <div class="tch-panel-head">
+        <h3><i class="bi bi-envelope"></i> Recent Messages</h3>
+        <a href="{% url 'admin_messages_history' %}">View history</a>
+    </div>
+    <div class="tch-panel-body">
+        {% for msg in recent_messages %}
+        <div class="tch-list-item">
+            <span><strong>{{ msg.subject }}</strong> — {{ msg.recipient_count }} recipient{{ msg.recipient_count|pluralize }}</span>
+            <span class="tch-badge">{{ msg.sent_at|date:"M d, Y" }}</span>
+        </div>
+        {% empty %}
+        <p class="adm-empty">No messages sent yet.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

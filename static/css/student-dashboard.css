@@ -1,0 +1,481 @@
+/**
+ * GCCW Student Dashboard — White & Green ERP Theme
+ */
+
+:root {
+  --green-primary: #1b7f4a;
+  --green-dark: #145c36;
+  --green-light: #2d9d5f;
+  --green-muted: #e8f5ee;
+  /* Distinct metric strip colors (reference ERP palette) */
+  --metric-announce: #8b2942;
+  --metric-attendance: #b8860b;
+  --metric-assessment: #1e3a5f;
+  --metric-tasks: #00838f;
+  --metric-placement: #2e7d32;
+
+  --white: #ffffff;
+  --off-white: #f7f9f8;
+  --grey-border: #dde5df;
+  --grey-subnav: #f3f6f4;
+  --text-dark: #1a2e24;
+  --text-muted: #5c6f65;
+
+  --sidebar-width: 230px;
+  --header-h: 54px;
+  --subnav-h: 40px;
+  --font: "Open Sans", "Segoe UI", system-ui, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body.erp-dashboard-body {
+  margin: 0;
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--text-dark);
+  background: var(--off-white);
+  line-height: 1.45;
+}
+
+a {
+  color: var(--green-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--green-dark);
+  text-decoration: underline;
+}
+
+/* ===== TOP HEADER (GREEN) ===== */
+.erp-top-header {
+  background: var(--green-primary);
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.25rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(27, 127, 74, 0.25);
+}
+
+.erp-brand-gccw {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
+  height: 36px;
+  padding: 0 1rem;
+  background: var(--white);
+  color: var(--green-primary);
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+.erp-brand-gccw:hover {
+  text-decoration: none;
+  background: var(--green-muted);
+}
+
+.erp-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.erp-student-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.35rem 0.75rem 0.35rem 0.35rem;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.erp-student-badge img {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--white);
+  object-fit: cover;
+}
+
+.erp-student-badge .badge-text .title {
+  color: var(--white);
+  font-weight: 700;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.erp-student-badge .badge-text .sub {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.68rem;
+}
+
+.erp-settings-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.erp-settings-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  text-decoration: none;
+  color: var(--white);
+}
+
+/* ===== SUB NAV ===== */
+.erp-subnav {
+  background: var(--grey-subnav);
+  border-bottom: 1px solid var(--grey-border);
+  height: var(--subnav-h);
+  display: flex;
+  align-items: stretch;
+  overflow-x: auto;
+  position: sticky;
+  top: var(--header-h);
+  z-index: 999;
+}
+
+.erp-subnav a {
+  display: flex;
+  align-items: center;
+  padding: 0 0.9rem;
+  color: var(--text-dark);
+  font-size: 0.78rem;
+  font-weight: 500;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+}
+
+.erp-subnav a:hover {
+  color: var(--green-primary);
+  border-bottom-color: var(--green-primary);
+  text-decoration: none;
+  background: rgba(27, 127, 74, 0.05);
+}
+
+.erp-subnav .caret {
+  margin-left: 0.3rem;
+  font-size: 0.55rem;
+  opacity: 0.5;
+}
+
+/* ===== SHELL ===== */
+.erp-shell {
+  display: flex;
+  min-height: calc(100vh - var(--header-h) - var(--subnav-h));
+}
+
+.erp-sidebar-toggle {
+  display: none;
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 1001;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--green-primary);
+  color: var(--white);
+  border: none;
+  box-shadow: 0 4px 14px rgba(27, 127, 74, 0.4);
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+/* ===== SIDEBAR ===== */
+.erp-sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  background: var(--white);
+  border-right: 1px solid var(--grey-border);
+  padding: 1rem 0;
+}
+
+.erp-profile-card {
+  margin: 0 0.75rem 1rem;
+  padding: 1rem;
+  background: var(--off-white);
+  border: 1px solid var(--grey-border);
+  border-radius: 6px;
+  text-align: center;
+}
+
+.erp-profile-photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+  object-fit: cover;
+  margin: 0 auto 0.65rem;
+  display: block;
+  background: var(--green-muted);
+  border: 2px solid var(--grey-border);
+}
+
+.erp-profile-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--green-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 0.65rem;
+}
+
+.erp-profile-detail {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin: 0.25rem 0;
+  text-align: left;
+}
+
+.erp-profile-detail strong {
+  color: var(--text-dark);
+  font-weight: 600;
+  display: block;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.erp-side-nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.erp-side-nav a {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.6rem 1rem;
+  color: var(--text-dark);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-left: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.erp-side-nav a .nav-icon {
+  color: var(--green-primary);
+  font-size: 0.95rem;
+  width: 18px;
+  text-align: center;
+}
+
+.erp-side-nav a:hover {
+  background: var(--green-muted);
+  color: var(--green-dark);
+  text-decoration: none;
+}
+
+.erp-side-nav a.active {
+  background: var(--green-muted);
+  border-left-color: var(--green-primary);
+  color: var(--green-primary);
+}
+
+/* ===== MAIN ===== */
+.erp-main {
+  flex: 1;
+  padding: 1rem 1.25rem 2rem;
+  background: var(--white);
+  min-width: 0;
+}
+
+.erp-page-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--grey-border);
+}
+
+.erp-page-title {
+  color: var(--green-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.erp-datetime {
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+/* Metric cards — white body, distinct colored label strips */
+.erp-metrics {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.erp-metric-card {
+  background: var(--white);
+  border: 1px solid var(--grey-border);
+  border-radius: 4px;
+  overflow: hidden;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.erp-metric-card:hover {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.erp-metric-value {
+  padding: 1.15rem 0.5rem 0.9rem;
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  line-height: 1;
+  background: var(--white);
+}
+
+.erp-metric-label {
+  padding: 0.5rem 0.35rem;
+  color: var(--white);
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.25;
+}
+
+.erp-metric-card.metric-announce .erp-metric-label { background: var(--metric-announce); }
+.erp-metric-card.metric-attendance .erp-metric-label { background: var(--metric-attendance); }
+.erp-metric-card.metric-assessment .erp-metric-label { background: var(--metric-assessment); }
+.erp-metric-card.metric-tasks .erp-metric-label { background: var(--metric-tasks); }
+.erp-metric-card.metric-placement .erp-metric-label { background: var(--metric-placement); }
+
+/* Panels */
+.erp-panel {
+  background: var(--white);
+  border: 1px solid var(--grey-border);
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.erp-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0;
+  background: var(--white);
+  border-bottom: 1px solid var(--grey-border);
+}
+
+.erp-panel-badge {
+  display: inline-block;
+  background: var(--green-primary);
+  color: var(--white);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.5rem 1rem;
+  margin: 0;
+}
+
+.erp-panel-actions {
+  padding: 0 1rem;
+}
+
+.erp-panel-actions a {
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: 0.75rem;
+  color: var(--green-primary);
+}
+
+.erp-panel-body {
+  padding: 1.5rem 1rem;
+  min-height: 80px;
+}
+
+.erp-panel-body.empty {
+  text-align: center;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 2.5rem 1rem;
+}
+
+.erp-panel-body.blank {
+  min-height: 180px;
+  background: var(--off-white);
+}
+
+.erp-sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  top: calc(var(--header-h) + var(--subnav-h));
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 997;
+}
+
+.erp-sidebar-overlay.show {
+  display: block;
+}
+
+@media (max-width: 1200px) {
+  .erp-metrics { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 992px) {
+  .erp-metrics { grid-template-columns: repeat(2, 1fr); }
+  .erp-student-badge .badge-text { display: none; }
+}
+
+@media (max-width: 768px) {
+  .erp-sidebar-toggle { display: flex; align-items: center; justify-content: center; }
+
+  .erp-sidebar {
+    position: fixed;
+    top: calc(var(--header-h) + var(--subnav-h));
+    left: 0;
+    bottom: 0;
+    z-index: 998;
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .erp-sidebar.open { transform: translateX(0); }
+  .erp-main { padding: 0.75rem; }
+}
+
+@media (max-width: 480px) {
+  .erp-metrics { grid-template-columns: 1fr; }
+}

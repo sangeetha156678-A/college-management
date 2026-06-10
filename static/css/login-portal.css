@@ -1,0 +1,489 @@
+/**
+ * Goodwill ERP Login Portal – production UI
+ * White layout · Green accents · Glassmorphism dark card
+ */
+
+:root {
+  --erp-white: #ffffff;
+  --erp-bg: #f8fafb;
+  --erp-green: #22c55e;
+  --erp-green-bright: #4ade80;
+  --erp-green-dark: #16a34a;
+  --erp-green-glow: rgba(34, 197, 94, 0.35);
+  --erp-navy: #0c1222;
+  --erp-navy-card: #111827;
+  --erp-navy-glass: rgba(17, 24, 39, 0.92);
+  --erp-text: #1e293b;
+  --erp-text-muted: #64748b;
+  --erp-border: #e2e8f0;
+  --erp-orange: #f97316;
+  --erp-radius: 16px;
+  --erp-radius-sm: 10px;
+  --erp-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.18);
+  --erp-shadow-green: 0 12px 40px -8px var(--erp-green-glow);
+  --font-erp: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.erp-login-body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-erp);
+  background: var(--erp-white);
+  color: var(--erp-text);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Ambient background */
+.erp-login-body::before,
+.erp-login-body::after {
+  content: "";
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.erp-login-body::before {
+  width: 420px;
+  height: 420px;
+  background: rgba(34, 197, 94, 0.12);
+  top: -120px;
+  right: -80px;
+}
+
+.erp-login-body::after {
+  width: 360px;
+  height: 360px;
+  background: rgba(34, 197, 94, 0.08);
+  bottom: -100px;
+  left: -60px;
+}
+
+.erp-login-page {
+  position: relative;
+  z-index: 1;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 2.5rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Back link */
+.erp-back-home {
+  align-self: flex-end;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--erp-orange);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.erp-back-home:hover {
+  color: #ea580c;
+  transform: translateX(2px);
+}
+
+/* Brand header */
+.erp-brand {
+  text-align: center;
+  margin-bottom: 1.75rem;
+}
+
+.erp-brand-logo {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 1rem;
+  padding: 0.5rem;
+  background: var(--erp-white);
+  border-radius: 50%;
+  box-shadow: 0 8px 32px rgba(15, 23, 42, 0.08), 0 0 0 4px rgba(34, 197, 94, 0.1);
+}
+
+.erp-brand-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.erp-brand h1 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--erp-navy);
+  margin: 0 0 0.35rem;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+}
+
+.erp-brand .erp-subtitle {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--erp-green-dark);
+  margin: 0;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Login shell */
+.erp-login-shell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Tabs */
+.erp-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 0 4px;
+  margin: 0 0 -2px;
+  list-style: none;
+  position: relative;
+  z-index: 2;
+}
+
+.erp-tabs li {
+  flex: 1;
+}
+
+.erp-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.85rem 0.5rem;
+  background: var(--erp-white);
+  color: var(--erp-text-muted);
+  border: 1px solid var(--erp-border);
+  border-bottom: none;
+  border-radius: 14px 14px 0 0;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.erp-tab i {
+  font-size: 1.15rem;
+  transition: transform 0.25s;
+}
+
+.erp-tab:hover {
+  color: var(--erp-green-dark);
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  transform: translateY(-2px);
+}
+
+.erp-tab:hover i {
+  transform: scale(1.08);
+}
+
+.erp-tab.active {
+  background: linear-gradient(180deg, var(--erp-green-bright) 0%, var(--erp-green) 100%);
+  color: var(--erp-white);
+  border-color: var(--erp-green);
+  box-shadow: var(--erp-shadow-green);
+  transform: translateY(-4px);
+}
+
+.erp-tab.active:hover {
+  color: var(--erp-white);
+  background: linear-gradient(180deg, #86efac 0%, var(--erp-green-dark) 100%);
+}
+
+/* Glass card */
+.erp-card {
+  position: relative;
+  background: linear-gradient(145deg, var(--erp-navy-glass) 0%, rgba(12, 18, 34, 0.97) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0 var(--erp-radius) var(--erp-radius) var(--erp-radius);
+  box-shadow: var(--erp-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  padding: 2rem 1.75rem 1.75rem;
+  overflow: hidden;
+}
+
+.erp-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(74, 222, 128, 0.4), transparent);
+}
+
+/* Form */
+.erp-alert-error {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  color: #fecaca;
+  padding: 0.75rem 1rem;
+  border-radius: var(--erp-radius-sm);
+  font-size: 0.875rem;
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+
+.erp-field {
+  margin-bottom: 1.25rem;
+}
+
+.erp-field label {
+  display: block;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.02em;
+}
+
+.erp-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.erp-input-icon {
+  position: absolute;
+  left: 1rem;
+  color: var(--erp-green-bright);
+  font-size: 1.1rem;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.erp-input-group input {
+  width: 100%;
+  padding: 0.9rem 1rem 0.9rem 2.85rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--erp-radius-sm);
+  color: var(--erp-white);
+  font-size: 0.95rem;
+  font-family: var(--font-erp);
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.erp-input-group input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.erp-input-group input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.09);
+  border-color: var(--erp-green);
+  box-shadow: 0 0 0 3px var(--erp-green-glow), 0 0 24px rgba(34, 197, 94, 0.15);
+}
+
+.erp-input-group.password-field input {
+  padding-right: 3.25rem;
+}
+
+.erp-password-toggle {
+  position: absolute;
+  right: 0.65rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.erp-password-toggle:hover {
+  background: rgba(34, 197, 94, 0.25);
+  color: var(--erp-green-bright);
+}
+
+.erp-forgot {
+  text-align: right;
+  margin: -0.25rem 0 1.5rem;
+}
+
+.erp-forgot a {
+  color: var(--erp-orange);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.erp-forgot a:hover {
+  color: #fdba74;
+  text-decoration: underline;
+}
+
+.erp-btn-login {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  border: none;
+  border-radius: var(--erp-radius-sm);
+  background: linear-gradient(135deg, var(--erp-green-bright) 0%, var(--erp-green) 50%, var(--erp-green-dark) 100%);
+  color: var(--erp-white);
+  font-size: 1.05rem;
+  font-weight: 700;
+  font-family: var(--font-erp);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 8px 24px var(--erp-green-glow);
+  transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+}
+
+.erp-btn-login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(34, 197, 94, 0.45);
+  filter: brightness(1.05);
+}
+
+.erp-btn-login:active {
+  transform: translateY(0);
+}
+
+.erp-signing-hint {
+  text-align: center;
+  margin: 1.25rem 0 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.erp-signing-hint strong {
+  color: var(--erp-green-bright);
+  font-weight: 600;
+}
+
+.erp-demo-creds {
+  margin-top: 1.25rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--erp-radius-sm);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px dashed rgba(74, 222, 128, 0.35);
+}
+
+.erp-demo-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--erp-green-bright);
+}
+
+.erp-demo-creds ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.erp-demo-creds li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.75);
+  padding: 0.25rem 0;
+}
+
+.erp-demo-role {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+  min-width: 4.5rem;
+}
+
+/* Page footer */
+.erp-page-footer {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.erp-return-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--erp-green-dark);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  margin-bottom: 1.25rem;
+  transition: color 0.2s, gap 0.2s;
+}
+
+.erp-return-link:hover {
+  color: var(--erp-green);
+  gap: 0.5rem;
+}
+
+.erp-copyright {
+  font-size: 0.75rem;
+  color: var(--erp-text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.erp-copyright span {
+  color: var(--erp-green-dark);
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .erp-login-page {
+    padding: 1rem 0.75rem 2rem;
+  }
+
+  .erp-brand h1 {
+    font-size: 1.05rem;
+  }
+
+  .erp-brand-logo {
+    width: 80px;
+    height: 80px;
+  }
+
+  .erp-tab {
+    padding: 0.7rem 0.25rem;
+    font-size: 0.58rem;
+  }
+
+  .erp-tab i {
+    font-size: 1rem;
+  }
+
+  .erp-card {
+    padding: 1.5rem 1.15rem 1.35rem;
+    border-radius: 0 12px 12px 12px;
+  }
+
+  .erp-tabs {
+    gap: 4px;
+  }
+}
+
+@media (min-width: 577px) {
+  .erp-login-page {
+    padding-top: 2rem;
+  }
+}

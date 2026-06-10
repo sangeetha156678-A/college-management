@@ -1,0 +1,39 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Create Class{% endblock %}
+
+{% block sidebar %}
+{% include "admin/partials/sidebar.html" %}
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="adm-page-head">
+    <div>
+        <h2 class="tch-section-title" style="margin:0;">Create Class</h2>
+        <p class="adm-subtitle">Define a new class section</p>
+    </div>
+    <a href="{% url 'admin_classes' %}" class="adm-btn adm-btn-ghost">
+        <i class="bi bi-arrow-left"></i> Back to classes
+    </a>
+</div>
+
+<section class="tch-panel adm-panel-spaced adm-form-panel">
+    <div class="tch-panel-body">
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="adm-form-grid">
+                {% for field in form %}
+                <div class="adm-field">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}<span class="adm-field-error">{{ field.errors.0 }}</span>{% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <div class="adm-form-actions">
+                <button type="submit" class="adm-btn adm-btn-primary">Create Class</button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

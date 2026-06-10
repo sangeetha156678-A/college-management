@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Goodwill Christian College{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    {% if admission_year %}
+    <div class="admission-strip">
+        Admission open for the year {{ admission_year }}
+    </div>
+    {% endif %}
+
+    <div class="site-header-top">
+        <div class="container">
+            <div>
+                <a href="tel:08025567177">Ph: 080-25567177, 080-41100422</a>
+            </div>
+            <div>
+                <a href="mailto:goodwillchristiancollege@gmail.com">goodwillchristiancollege@gmail.com</a>
+            </div>
+        </div>
+    </div>
+
+    <nav class="site-nav" id="site-nav">
+        <div class="container">
+            <a href="{% url 'home' %}" class="nav-brand">
+                Goodwill Christian College
+                <span>For Women</span>
+            </a>
+            <button type="button" class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation"
+                aria-expanded="false">&#9776;</button>
+            <ul class="nav-menu" id="nav-menu">
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'home' %}#features">Features</a></li>
+                <li><a href="{% url 'home' %}#courses">Courses</a></li>
+                <li><a href="{% url 'home' %}#contact">Contact</a></li>
+                <li><a href="{% url 'login' %}" class="btn-login">Login</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h4>Information</h4>
+                    <ul>
+                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="{% url 'home' %}#courses">Courses</a></li>
+                        <li><a href="{% url 'login' %}">Application / Login</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Departments</h4>
+                    <ul>
+                        <li><a href="{% url 'home' %}#courses">BBA</a></li>
+                        <li><a href="{% url 'home' %}#courses">BCA</a></li>
+                        <li><a href="{% url 'home' %}#courses">BCOM</a></li>
+                        <li><a href="{% url 'home' %}#courses">BSC</a></li>
+                        <li><a href="{% url 'home' %}#courses">BA</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Contact</h4>
+                    <p>10, Promenade Road, Frazer Town<br>Bengaluru, Karnataka 560005</p>
+                    <p style="margin-top: 0.75rem;">
+                        Phone: 080-25567177, 080-41100422<br>
+                        Email: <a href="mailto:goodwillchristiancollege@gmail.com">goodwillchristiancollege@gmail.com</a>
+                    </p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>2026 &copy; All Rights Reserved. <a href="{% url 'home' %}">Goodwill Christian College</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/landing.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

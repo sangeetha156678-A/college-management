@@ -1,0 +1,138 @@
+{% extends "dashboard_base.html" %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block header_sub_label %}{{ student_display_name }}{% endblock %}
+
+{% block sidebar %}
+<aside class="erp-sidebar" id="erp-sidebar">
+    <div class="erp-profile-card">
+        <img src="{% static 'img/default-avatar.svg' %}" alt="Student profile" class="erp-profile-photo">
+        <h2 class="erp-profile-name">STUDENT</h2>
+        <p class="erp-profile-detail">
+            <strong>Registration No.</strong>
+            {{ registration_no }}
+        </p>
+        <p class="erp-profile-detail">
+            <strong>Semester</strong>
+            {{ semester }}
+        </p>
+        <p class="erp-profile-detail">
+            <strong>Course</strong>
+            {{ course }}
+        </p>
+        <p class="erp-profile-detail">
+            <strong>Section</strong>
+            {{ section }}
+        </p>
+    </div>
+
+    <ul class="erp-side-nav">
+        <li>
+            <a href="{% url 'student_dashboard' %}" class="active">
+                <span class="nav-icon"><i class="bi bi-speedometer2"></i></span>
+                Dashboard
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <span class="nav-icon"><i class="bi bi-person"></i></span>
+                Profile
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <span class="nav-icon"><i class="bi bi-journal-text"></i></span>
+                Syllabus
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <span class="nav-icon"><i class="bi bi-calendar3"></i></span>
+                Calendar
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <span class="nav-icon"><i class="bi bi-clock"></i></span>
+                Time Table
+            </a>
+        </li>
+        <li>
+            <a href="#">
+                <span class="nav-icon"><i class="bi bi-book"></i></span>
+                Library
+            </a>
+        </li>
+    </ul>
+</aside>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="erp-page-bar">
+    <span class="erp-page-title">Dashboard</span>
+    <span class="erp-datetime" id="erp-clock">{{ current_datetime }}</span>
+</div>
+
+<section class="erp-metrics" aria-label="Quick statistics">
+    <article class="erp-metric-card metric-announce">
+        <div class="erp-metric-value">{{ metrics.announcements }}</div>
+        <div class="erp-metric-label">Announcements</div>
+    </article>
+    <article class="erp-metric-card metric-attendance">
+        <div class="erp-metric-value">{{ metrics.attendance }}</div>
+        <div class="erp-metric-label">Attendance</div>
+    </article>
+    <article class="erp-metric-card metric-assessment">
+        <div class="erp-metric-value">{{ metrics.assessment }}</div>
+        <div class="erp-metric-label">Assessment &amp; Assignments</div>
+    </article>
+    <article class="erp-metric-card metric-tasks">
+        <div class="erp-metric-value">{{ metrics.tasks }}</div>
+        <div class="erp-metric-label">Tasks</div>
+    </article>
+    <article class="erp-metric-card metric-placement">
+        <div class="erp-metric-value">{{ metrics.placement }}</div>
+        <div class="erp-metric-label">Placement</div>
+    </article>
+</section>
+
+<section class="erp-panel" aria-labelledby="schedule-heading">
+    <div class="erp-panel-head">
+        <h2 class="erp-panel-badge" id="schedule-heading">Today's Schedule</h2>
+    </div>
+    <div class="erp-panel-body empty">
+        (No schedule for Today)
+    </div>
+</section>
+
+<section class="erp-panel" aria-labelledby="bulletin-heading">
+    <div class="erp-panel-head">
+        <h2 class="erp-panel-badge" id="bulletin-heading">Bulletin Board</h2>
+        <div class="erp-panel-actions">
+            <a href="#">View All Posts</a>
+            <a href="#">Compose</a>
+        </div>
+    </div>
+    <div class="erp-panel-body blank" aria-label="Bulletin board content area"></div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function () {
+        var el = document.getElementById('erp-clock');
+        if (!el) return;
+        function tick() {
+            var now = new Date();
+            el.textContent = now.toLocaleString('en-US', {
+                month: 'short', day: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+            }).toUpperCase();
+        }
+        tick();
+        setInterval(tick, 1000);
+    })();
+</script>
+{% endblock %}

@@ -1,0 +1,292 @@
+{% extends "teacher_base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block sidebar %}
+<aside class="tch-sidebar" id="tch-sidebar">
+    <p class="tch-side-label">Faculty Menu</p>
+    <ul class="tch-side-nav">
+        <li><a href="{% url 'teacher_dashboard' %}" class="active"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+        <li><a href="#"><i class="bi bi-collection"></i> My Classes</a></li>
+        <li><a href="#"><i class="bi bi-calendar-check"></i> Attendance</a></li>
+        <li><a href="#"><i class="bi bi-file-earmark-text"></i> Notes</a></li>
+        <li><a href="#"><i class="bi bi-clipboard-check"></i> Assignments</a></li>
+        <li><a href="#"><i class="bi bi-people"></i> Students</a></li>
+        <li><a href="#"><i class="bi bi-calendar3"></i> Calendar</a></li>
+        <li><a href="#"><i class="bi bi-chat-dots"></i> Messages</a></li>
+        <li><a href="#"><i class="bi bi-bar-chart"></i> Reports</a></li>
+        <li><a href="#"><i class="bi bi-gear"></i> Settings</a></li>
+    </ul>
+</aside>
+{% endblock %}
+
+{% block dashboard_content %}
+<section aria-labelledby="stats-heading">
+    <h2 class="tch-section-title" id="stats-heading">Overview <span>Academic summary</span></h2>
+    <div class="tch-stats">
+        <article class="tch-stat-card blue">
+            <div class="tch-stat-top">
+                <div class="tch-stat-icon"><i class="bi bi-collection-play"></i></div>
+            </div>
+            <div class="tch-stat-count">{{ stats.classes }}</div>
+            <div class="tch-stat-label">My Classes</div>
+            <a href="#" class="tch-stat-btn">View Classes</a>
+        </article>
+        <article class="tch-stat-card purple">
+            <div class="tch-stat-top">
+                <div class="tch-stat-icon"><i class="bi bi-people-fill"></i></div>
+            </div>
+            <div class="tch-stat-count">{{ stats.students }}</div>
+            <div class="tch-stat-label">Students</div>
+            <a href="#" class="tch-stat-btn">Manage</a>
+        </article>
+        <article class="tch-stat-card green">
+            <div class="tch-stat-top">
+                <div class="tch-stat-icon"><i class="bi bi-check2-circle"></i></div>
+            </div>
+            <div class="tch-stat-count">{{ stats.attendance_pct }}%</div>
+            <div class="tch-stat-label">Attendance</div>
+            <a href="#" class="tch-stat-btn">Upload</a>
+        </article>
+        <article class="tch-stat-card orange">
+            <div class="tch-stat-top">
+                <div class="tch-stat-icon"><i class="bi bi-journal-check"></i></div>
+            </div>
+            <div class="tch-stat-count">{{ stats.assignments }}</div>
+            <div class="tch-stat-label">Assignments</div>
+            <a href="#" class="tch-stat-btn">Create New</a>
+        </article>
+        <article class="tch-stat-card pink">
+            <div class="tch-stat-top">
+                <div class="tch-stat-icon"><i class="bi bi-file-earmark-pdf"></i></div>
+            </div>
+            <div class="tch-stat-count">{{ stats.notes }}</div>
+            <div class="tch-stat-label">Notes</div>
+            <a href="#" class="tch-stat-btn">Upload</a>
+        </article>
+    </div>
+</section>
+
+<section aria-labelledby="actions-heading">
+    <h2 class="tch-section-title" id="actions-heading">Quick Actions</h2>
+    <div class="tch-actions">
+        <a href="#" class="tch-action-card">
+            <div class="tch-action-icon"><i class="bi bi-cloud-upload"></i></div>
+            <div>
+                <h3>Upload Attendance</h3>
+                <p>Mark daily class attendance</p>
+            </div>
+        </a>
+        <a href="#" class="tch-action-card">
+            <div class="tch-action-icon"><i class="bi bi-file-earmark-arrow-up"></i></div>
+            <div>
+                <h3>Upload Notes</h3>
+                <p>Share lecture materials</p>
+            </div>
+        </a>
+        <a href="#" class="tch-action-card">
+            <div class="tch-action-icon"><i class="bi bi-plus-circle"></i></div>
+            <div>
+                <h3>Create Assignment</h3>
+                <p>Publish new coursework</p>
+            </div>
+        </a>
+        <a href="#" class="tch-action-card">
+            <div class="tch-action-icon"><i class="bi bi-inbox"></i></div>
+            <div>
+                <h3>View Submitted Assignments</h3>
+                <p>Review student submissions</p>
+            </div>
+        </a>
+        <a href="#" class="tch-action-card">
+            <div class="tch-action-icon"><i class="bi bi-graph-up-arrow"></i></div>
+            <div>
+                <h3>Student Performance</h3>
+                <p>Track grades &amp; progress</p>
+            </div>
+        </a>
+        <a href="#" class="tch-action-card">
+            <div class="tch-action-icon"><i class="bi bi-download"></i></div>
+            <div>
+                <h3>Download Reports</h3>
+                <p>Export class analytics</p>
+            </div>
+        </a>
+    </div>
+</section>
+
+<div class="tch-grid-2">
+    <section class="tch-panel">
+        <div class="tch-panel-head">
+            <h3><i class="bi bi-calendar-week"></i> Class Timetable</h3>
+            <a href="#">Full schedule</a>
+        </div>
+        <div class="tch-panel-body">
+            <div class="tch-list-item">
+                <span>09:00 – Database Systems (BCA-A)</span>
+                <span class="tch-badge">Room 204</span>
+            </div>
+            <div class="tch-list-item">
+                <span>11:00 – Design Thinking (BCA-B)</span>
+                <span class="tch-badge">Lab 1</span>
+            </div>
+            <div class="tch-list-item">
+                <span>14:00 – AI Fundamentals (BCA-A)</span>
+                <span class="tch-badge info">Online</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="tch-panel">
+        <div class="tch-panel-head">
+            <h3><i class="bi bi-megaphone"></i> Recent Announcements</h3>
+            <a href="#">View all</a>
+        </div>
+        <div class="tch-panel-body">
+            <div class="tch-list-item">
+                <span>Faculty meeting – 30 May</span>
+                <span class="tch-badge warn">New</span>
+            </div>
+            <div class="tch-list-item">
+                <span>Exam schedule published</span>
+                <span class="tch-badge">Admin</span>
+            </div>
+            <div class="tch-list-item">
+                <span>Holiday – Karnataka Rajyotsava</span>
+                <span class="tch-badge">Calendar</span>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="tch-grid-2">
+    <section class="tch-panel">
+        <div class="tch-panel-head">
+            <h3><i class="bi bi-clock-history"></i> Upcoming Classes</h3>
+            <a href="#">Calendar</a>
+        </div>
+        <div class="tch-panel-body">
+            <div class="tch-list-item">
+                <span>Tomorrow · 09:00 AM</span>
+                <strong>DBMS Lab</strong>
+            </div>
+            <div class="tch-list-item">
+                <span>Tomorrow · 02:00 PM</span>
+                <strong>Creating with AI</strong>
+            </div>
+            <div class="tch-list-item">
+                <span>Fri · 10:30 AM</span>
+                <strong>Mathematical Foundations</strong>
+            </div>
+        </div>
+    </section>
+
+    <section class="tch-panel">
+        <div class="tch-panel-head">
+            <h3><i class="bi bi-clipboard-data"></i> Assignment Submission Status</h3>
+            <a href="#">Details</a>
+        </div>
+        <div class="tch-panel-body">
+            <div class="tch-list-item">
+                <span>Unit 3 – ER Diagrams</span>
+                <span class="tch-badge">42 / 48 submitted</span>
+            </div>
+            <div class="tch-list-item">
+                <span>AI Project Proposal</span>
+                <span class="tch-badge warn">18 / 48 pending</span>
+            </div>
+            <div class="tch-list-item">
+                <span>Weekly Quiz – Week 6</span>
+                <span class="tch-badge info">Due Friday</span>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="tch-grid-2">
+    <section class="tch-panel">
+        <div class="tch-panel-head">
+            <h3><i class="bi bi-bar-chart-line"></i> Attendance Analytics</h3>
+            <a href="#">Last 6 weeks</a>
+        </div>
+        <div class="tch-panel-body">
+            <div class="tch-chart" role="img" aria-label="Attendance chart placeholder">
+                <div class="tch-chart-bar" style="height: 55%;"></div>
+                <div class="tch-chart-bar" style="height: 72%;"></div>
+                <div class="tch-chart-bar" style="height: 68%;"></div>
+                <div class="tch-chart-bar" style="height: 85%;"></div>
+                <div class="tch-chart-bar" style="height: 78%;"></div>
+                <div class="tch-chart-bar" style="height: 91%;"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="tch-panel">
+        <div class="tch-panel-head">
+            <h3><i class="bi bi-person-lines-fill"></i> Student Progress Tracker</h3>
+            <a href="#">All students</a>
+        </div>
+        <div class="tch-panel-body">
+            <div class="tch-progress-row">
+                <div class="tch-progress-label"><span>BCA-A · Overall</span><span>84%</span></div>
+                <div class="tch-progress-track"><div class="tch-progress-fill" style="width: 84%;"></div></div>
+            </div>
+            <div class="tch-progress-row">
+                <div class="tch-progress-label"><span>BCA-B · Overall</span><span>76%</span></div>
+                <div class="tch-progress-track"><div class="tch-progress-fill" style="width: 76%;"></div></div>
+            </div>
+            <div class="tch-progress-row">
+                <div class="tch-progress-label"><span>Assignments on time</span><span>92%</span></div>
+                <div class="tch-progress-track"><div class="tch-progress-fill" style="width: 92%;"></div></div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="tch-grid-2">
+    <section class="tch-panel">
+        <div class="tch-panel-head">
+            <h3><i class="bi bi-chat-left-text"></i> Messaging</h3>
+            <a href="#">Open inbox</a>
+        </div>
+        <div class="tch-panel-body">
+            <div class="tch-msg">
+                <div class="tch-msg-avatar">AR</div>
+                <div>
+                    <strong>Arun A</strong><br>
+                    <span>Question about assignment deadline…</span>
+                </div>
+            </div>
+            <div class="tch-msg">
+                <div class="tch-msg-avatar">SK</div>
+                <div>
+                    <strong>Sneha K</strong><br>
+                    <span>Request for lab slot change</span>
+                </div>
+            </div>
+            <div class="tch-msg">
+                <div class="tch-msg-avatar">DM</div>
+                <div>
+                    <strong>Department</strong><br>
+                    <span>Meeting reminder sent to faculty</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="tch-panel">
+        <div class="tch-panel-head">
+            <h3><i class="bi bi-folder2-open"></i> Resource Sharing</h3>
+            <a href="#">Upload file</a>
+        </div>
+        <div class="tch-panel-body">
+            <div class="tch-resource-grid">
+                <a href="#" class="tch-resource-item"><i class="bi bi-file-pdf"></i> DBMS Unit 4.pdf</a>
+                <a href="#" class="tch-resource-item"><i class="bi bi-file-slides"></i> AI Slides.pptx</a>
+                <a href="#" class="tch-resource-item"><i class="bi bi-file-code"></i> Lab Sample.py</a>
+                <a href="#" class="tch-resource-item"><i class="bi bi-link-45deg"></i> Reference Links</a>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

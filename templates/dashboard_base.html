@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Student Dashboard{% endblock %} | GCCW Portal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/student-dashboard.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="erp-dashboard-body">
+    <header class="erp-top-header">
+        <a href="{% url 'home' %}" class="erp-brand-gccw" aria-label="GCCW Home">GCCW</a>
+        <div class="erp-header-right">
+            <div class="erp-student-badge">
+                <img src="{% static 'img/default-avatar.svg' %}" alt="">
+                <div class="badge-text">
+                    <div class="title">STUDENT</div>
+                    <div class="sub">{% block header_sub_label %}{{ student_display_name|default:"Portal User" }}{% endblock %}</div>
+                </div>
+            </div>
+            <a href="{% url 'logout' %}" class="erp-settings-btn" title="Settings / Logout" aria-label="Settings">
+                <i class="bi bi-gear-fill"></i>
+            </a>
+        </div>
+    </header>
+
+    <nav class="erp-subnav" aria-label="Main modules">
+        <a href="#">Institute <span class="caret">&#9660;</span></a>
+        <a href="#">Personal <span class="caret">&#9660;</span></a>
+        <a href="#">Academic Schedules <span class="caret">&#9660;</span></a>
+        <a href="#">Academic Functions <span class="caret">&#9660;</span></a>
+        <a href="#">Facilities <span class="caret">&#9660;</span></a>
+        <a href="#">Communication</a>
+        <a href="#">OSA <span class="caret">&#9660;</span></a>
+        <a href="#">DCCC / CSP <span class="caret">&#9660;</span></a>
+    </nav>
+
+    <div class="erp-shell">
+        {% block sidebar %}{% endblock %}
+        <main class="erp-main">
+            {% block dashboard_content %}{% endblock %}
+        </main>
+    </div>
+
+    <button type="button" class="erp-sidebar-toggle" id="sidebar-toggle" aria-label="Open menu">
+        <i class="bi bi-list"></i>
+    </button>
+    <div class="erp-sidebar-overlay" id="sidebar-overlay"></div>
+
+    <script>
+        (function () {
+            var toggle = document.getElementById('sidebar-toggle');
+            var sidebar = document.querySelector('.erp-sidebar');
+            var overlay = document.getElementById('sidebar-overlay');
+            if (!toggle || !sidebar) return;
+            function close() {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('show');
+            }
+            toggle.addEventListener('click', function () {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('show');
+            });
+            overlay.addEventListener('click', close);
+        })();
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>
