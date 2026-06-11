@@ -1,11 +1,13 @@
 from pathlib import Path
 import os
-import dj_database_url
 
 # Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Security
+# ==========================================================
+# SECURITY
+# ==========================================================
+
 SECRET_KEY = os.environ.get(
     "SECRET_KEY",
     "django-insecure-dev-key"
@@ -13,11 +15,12 @@ SECRET_KEY = os.environ.get(
 
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = [
-    "*"
-]
+ALLOWED_HOSTS = ["*"]
 
-# Applications
+# ==========================================================
+# APPLICATIONS
+# ==========================================================
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,7 +47,10 @@ LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 AUTO_CREATE_DEMO_USERS = True
 
-# Middleware
+# ==========================================================
+# MIDDLEWARE
+# ==========================================================
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -57,7 +63,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
-# Templates
+# ==========================================================
+# TEMPLATES
+# ==========================================================
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -93,24 +102,29 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # }
 
 # Railway MySQL Database
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.mysql',
-#        'NAME': os.getenv('MYSQLDATABASE', 'railway'),
-#        'USER': os.getenv('MYSQLUSER', 'root'),
-#        'PASSWORD': os.getenv('MYSQLPASSWORD', ''),
-#        'HOST': os.getenv('MYSQLHOST', ''),
-#        'PORT': os.getenv('MYSQLPORT', '3306'),
-#        'OPTIONS': {
-#            'charset': 'utf8mb4',
-#        },}
-#}
-# Password Validation
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ.get('MYSQLDATABASE', 'railway'),
+        'USER': os.environ.get('MYSQLUSER', 'root'),
+        'PASSWORD': os.environ.get('MYSQLPASSWORD', ''),
+        'HOST': os.environ.get('MYSQLHOST', 'mysql.railway.internal'),
+        'PORT': os.environ.get('MYSQLPORT', '3306'),
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        },
+    }
+}
 
-DATABASES = dj_database_url.config(
-    default=os.environ.get('DATABASE_URL')
-)
+# Temporary debug (remove later)
+print("MYSQLDATABASE =", os.environ.get('MYSQLDATABASE'))
+print("MYSQLUSER =", os.environ.get('MYSQLUSER'))
+print("MYSQLHOST =", os.environ.get('MYSQLHOST'))
+print("MYSQLPORT =", os.environ.get('MYSQLPORT'))
 
+# ==========================================================
+# PASSWORD VALIDATION
+# ==========================================================
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -127,15 +141,22 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
+# ==========================================================
+# INTERNATIONALIZATION
+# ==========================================================
+
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
+
 USE_TZ = True
 
-# Static Files
+# ==========================================================
+# STATIC FILES
+# ==========================================================
+
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
@@ -144,18 +165,30 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Media Files
+# ==========================================================
+# MEDIA FILES
+# ==========================================================
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Default primary key field type
+# ==========================================================
+# DEFAULT PRIMARY KEY
+# ==========================================================
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Email
+# ==========================================================
+# EMAIL
+# ==========================================================
+
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'noreply@goodwillcollege.edu'
 
-# Railway URL
+# ==========================================================
+# PORTAL URL
+# ==========================================================
+
 PORTAL_BASE_URL = os.environ.get(
     'PORTAL_BASE_URL',
     'http://127.0.0.1:8000'
