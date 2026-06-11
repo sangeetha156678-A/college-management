@@ -1,0 +1,112 @@
+{% extends "teacher_base.html" %}
+{% load static %}
+
+{% block title %}Attendance Preview{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin-dashboard.css' %}">
+{% endblock %}
+
+{% block sidebar %}
+{% include "partials/teacher_sidebar.html" %}
+{% endblock %}
+
+{% block dashboard_content %}
+{% include "partials/flash_messages.html" %}
+
+<div class="adm-page-head">
+    <div>
+        <h2 class="tch-section-title" style="margin:0;">Upload Preview</h2>
+        <p class="adm-subtitle">Review parsed rows before committing attendance records</p>
+    </div>
+</div>
+
+<section class="tch-stats" style="margin-bottom:1.5rem;">
+    <article class="tch-stat-card blue">
+        <div class="tch-stat-count">{{ preview.summary.total }}</div>
+        <div class="tch-stat-label">Rows Parsed</div>
+    </article>
+    <article class="tch-stat-card green">
+        <div class="tch-stat-count">{{ preview.summary.valid }}</div>
+        <div class="tch-stat-label">Valid Rows</div>
+    </article>
+    <article class="tch-stat-card orange">
+        <div class="tch-stat-count">{{ preview.summary.errors }}</div>
+        <div class="tch-stat-label">Errors</div>
+    </article>
+    <article class="tch-stat-card pink">
+        <div class="tch-stat-count">{{ preview.summary.duplicates }}</div>
+        <div class="tch-stat-label">Duplicates</div>
+    </article>
+</section>
+
+{% if preview.errors %}
+<section class="tch-panel adm-panel-spaced">
+    <div class="tch-panel-head"><h3>Errors</h3></div>
+    <div class="tch-panel-body">
+        <ul class="adm-error-list">
+            {% for error in preview.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>
+{% endif %}
+
+{% if preview.duplicates %}
+<section class="tch-panel adm-panel-spaced">
+    <div class="tch-panel-head"><h3>Duplicates / Skipped</h3></div>
+    <div class="tch-panel-body">
+        <ul class="adm-error-list">
+            {% for dup in preview.duplicates %}
+            <li>{{ dup }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>
+{% endif %}
+
+{% if preview.valid_rows %}
+<section class="tch-panel adm-panel-spaced">
+    <div class="tch-panel-head"><h3>Valid Rows ({{ preview.valid_rows|length }})</h3></div>
+    <div class="tch-panel-body">
+        <div class="adm-table-wrap">
+            <table class="adm-table">
+                <thead>
+                    <tr>
+                        <th>Roll No.</th>
+                        <th>Student</th>
+                        <th>Subject</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in preview.valid_rows %}
+                    <tr>
+                        <td><code>{{ row.roll_number }}</code></td>
+                        <td>{{ row.student_name }}</td>
+                        <td>{{ row.subject_code }}</td>
+                        <td>{{ row.date }}</td>
+                        <td>{{ row.status|title }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<div class="adm-form-actions" style="margin-top:1.5rem;">
+    <a href="{% url 'teacher_attendance_upload' %}" class="adm-btn adm-btn-ghost">Cancel</a>
+    {% if preview.valid_rows %}
+    <form method="post" action="{% url 'teacher_attendance_commit' %}" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="adm-btn adm-btn-primary">
+            <i class="bi bi-check-lg"></i> Commit {{ preview.valid_rows|length }} Record(s)
+        </button>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}

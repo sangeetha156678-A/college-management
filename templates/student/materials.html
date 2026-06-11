@@ -1,0 +1,63 @@
+{% extends "dashboard_base.html" %}
+{% load static %}
+
+{% block title %}Study Materials{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/teacher-dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin-dashboard.css' %}">
+<style>
+.subject-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; margin-top: 1rem; }
+.subject-card { background: #fff; border-radius: 12px; border: 1px solid #e8ecf1; overflow: hidden; }
+.subject-card-head { padding: 1rem 1.25rem; border-bottom: 1px solid #e8ecf1; }
+.subject-card-head h3 { margin: 0; font-size: 1rem; }
+.subject-card-body { padding: 1rem 1.25rem; }
+.material-item { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6; }
+.material-item:last-child { border-bottom: none; }
+.material-meta { font-size: 0.8rem; color: #6b7280; }
+</style>
+{% endblock %}
+
+{% block header_sub_label %}{{ student_display_name }}{% endblock %}
+
+{% block sidebar %}
+{% include "partials/student_sidebar.html" %}
+{% endblock %}
+
+{% block dashboard_content %}
+{% include "partials/flash_messages.html" %}
+
+<div class="erp-page-bar">
+    <span class="erp-page-title">Study Materials</span>
+</div>
+
+<div class="subject-card-grid">
+    {% for item in subject_materials %}
+    <article class="subject-card">
+        <div class="subject-card-head">
+            <h3>{{ item.subject.code }} — {{ item.subject.name }}</h3>
+        </div>
+        <div class="subject-card-body">
+            {% for material in item.materials %}
+            <div class="material-item">
+                <div>
+                    <strong>{{ material.title }}</strong>
+                    <div class="material-meta">
+                        {{ material.uploaded_at|date:"M d, Y" }} · {{ material.file_size_display }}
+                        {% if material.topic %} · {{ material.topic }}{% endif %}
+                    </div>
+                </div>
+                <a href="{% url 'student_material_download' material.pk %}" class="adm-btn adm-btn-ghost adm-btn-sm">
+                    <i class="bi bi-download"></i>
+                </a>
+            </div>
+            {% empty %}
+            <p style="color:#6b7280; font-size:0.875rem; margin:0;">No materials uploaded yet.</p>
+            {% endfor %}
+        </div>
+    </article>
+    {% empty %}
+    <p>No subjects found for your semester.</p>
+    {% endfor %}
+</div>
+{% endblock %}

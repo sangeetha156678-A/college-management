@@ -1,0 +1,58 @@
+{% extends "teacher_base.html" %}
+{% load static %}
+
+{% block title %}Review Submission{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin-dashboard.css' %}">
+{% endblock %}
+
+{% block sidebar %}
+{% include "partials/teacher_sidebar.html" %}
+{% endblock %}
+
+{% block dashboard_content %}
+{% include "partials/flash_messages.html" %}
+
+<div class="adm-page-head">
+    <div>
+        <h2 class="tch-section-title" style="margin:0;">Review Submission</h2>
+        <p class="adm-subtitle">{{ submission.student.user.display_name }} — {{ submission.subject.code }} (v{{ submission.version }})</p>
+    </div>
+    <a href="{% url 'teacher_assignments' %}" class="adm-btn adm-btn-ghost">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+</div>
+
+<section class="tch-panel adm-panel-spaced">
+    <div class="tch-panel-body">
+        <p><strong>Submitted:</strong> {{ submission.submitted_at|date:"M d, Y H:i" }}</p>
+        <p><strong>Current status:</strong> {{ submission.get_status_display }}</p>
+        <p>
+            <a href="{% url 'teacher_assignment_download' submission.pk %}" class="adm-btn adm-btn-ghost adm-btn-sm">
+                <i class="bi bi-download"></i> Download PDF
+            </a>
+        </p>
+
+        <form method="post" novalidate style="margin-top:1.5rem;">
+            {% csrf_token %}
+            <div class="adm-form-grid">
+                <div class="adm-field">
+                    <label for="id_status">Status</label>
+                    {{ form.status }}
+                    {% if form.status.errors %}<span class="adm-field-error">{{ form.status.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="adm-field adm-field-full">
+                    <label for="id_feedback">Feedback (optional)</label>
+                    {{ form.feedback }}
+                </div>
+            </div>
+            <div class="adm-form-actions">
+                <button type="submit" class="adm-btn adm-btn-primary">
+                    <i class="bi bi-check-lg"></i> Save Review
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends "teacher_base.html" %}
+{% load static %}
+
+{% block title %}Assignments{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin-dashboard.css' %}">
+{% endblock %}
+
+{% block sidebar %}
+{% include "partials/teacher_sidebar.html" %}
+{% endblock %}
+
+{% block dashboard_content %}
+{% include "partials/flash_messages.html" %}
+
+<div class="adm-page-head">
+    <div>
+        <h2 class="tch-section-title" style="margin:0;">Assignment Submissions</h2>
+        <p class="adm-subtitle">Review and provide feedback on student assignment PDFs</p>
+    </div>
+</div>
+
+<form method="get" class="adm-filter-bar" style="margin-bottom:1rem; display:flex; gap:0.75rem; flex-wrap:wrap;">
+    <select name="subject" class="adm-input" onchange="this.form.submit()">
+        <option value="">All subjects</option>
+        {% for subject in subjects %}
+        <option value="{{ subject.pk }}"{% if selected_subject_id == subject.pk|stringformat:"s" %} selected{% endif %}>
+            {{ subject.code }} — {{ subject.name }}
+        </option>
+        {% endfor %}
+    </select>
+    <select name="status" class="adm-input" onchange="this.form.submit()">
+        <option value="">All statuses</option>
+        {% for value, label in status_choices %}
+        <option value="{{ value }}"{% if selected_status == value %} selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+    </select>
+</form>
+
+<section class="tch-panel adm-panel-spaced">
+    <div class="tch-panel-body">
+        <div class="adm-table-wrap">
+            <table class="adm-table">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Roll No.</th>
+                        <th>Subject</th>
+                        <th>Version</th>
+                        <th>Submitted</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for submission in submissions %}
+                    <tr>
+                        <td><strong>{{ submission.student.user.display_name }}</strong></td>
+                        <td><code>{{ submission.student.display_roll_number }}</code></td>
+                        <td>{{ submission.subject.code }}</td>
+                        <td>v{{ submission.version }}</td>
+                        <td>{{ submission.submitted_at|date:"M d, Y H:i" }}</td>
+                        <td>
+                            <span class="adm-badge adm-badge-{{ submission.status }}">{{ submission.get_status_display }}</span>
+                        </td>
+                        <td>
+                            <a href="{% url 'teacher_assignment_review' submission.pk %}" class="adm-btn adm-btn-ghost adm-btn-sm">
+                                <i class="bi bi-eye"></i> Review
+                            </a>
+                            <a href="{% url 'teacher_assignment_download' submission.pk %}" class="adm-btn adm-btn-ghost adm-btn-sm">
+                                <i class="bi bi-download"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="adm-empty-cell">No submissions yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

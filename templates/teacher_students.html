@@ -8,13 +8,7 @@
 {% endblock %}
 
 {% block sidebar %}
-<aside class="tch-sidebar" id="tch-sidebar">
-    <p class="tch-side-label">Faculty Menu</p>
-    <ul class="tch-side-nav">
-        <li><a href="{% url 'teacher_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
-        <li><a href="{% url 'teacher_students' %}" class="active"><i class="bi bi-people"></i> Students</a></li>
-    </ul>
-</aside>
+{% include "partials/teacher_sidebar.html" %}
 {% endblock %}
 
 {% block dashboard_content %}
@@ -25,6 +19,17 @@
     </div>
 </div>
 
+<form method="get" class="adm-filter-bar" style="margin-bottom:1rem;">
+    <select name="subject" class="adm-input" onchange="this.form.submit()">
+        <option value="">All subjects</option>
+        {% for subject in subjects %}
+        <option value="{{ subject.pk }}"{% if selected_subject_id == subject.pk|stringformat:"s" %} selected{% endif %}>
+            {{ subject.code }} — {{ subject.name }}
+        </option>
+        {% endfor %}
+    </select>
+</form>
+
 <section class="tch-panel adm-panel-spaced">
     <div class="tch-panel-body">
         <div class="adm-table-wrap">
@@ -32,8 +37,8 @@
                 <thead>
                     <tr>
                         <th scope="col">Student Name</th>
+                        <th scope="col">Roll No.</th>
                         <th scope="col">Email</th>
-                        <th scope="col">Username</th>
                         <th scope="col">Department</th>
                         <th scope="col">Year</th>
                         <th scope="col">Semester</th>
@@ -43,8 +48,8 @@
                     {% for student in students %}
                     <tr>
                         <td><strong>{{ student.user.display_name }}</strong></td>
+                        <td><code>{{ student.display_roll_number }}</code></td>
                         <td>{{ student.user.email }}</td>
-                        <td><code>{{ student.user.username }}</code></td>
                         <td>{{ student.year.department.code }}</td>
                         <td>Year {{ student.year.number }}</td>
                         <td>Semester {{ student.semester.number }}</td>

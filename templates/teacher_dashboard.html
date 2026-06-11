@@ -3,21 +3,7 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block sidebar %}
-<aside class="tch-sidebar" id="tch-sidebar">
-    <p class="tch-side-label">Faculty Menu</p>
-    <ul class="tch-side-nav">
-        <li><a href="{% url 'teacher_dashboard' %}" class="active"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
-        <li><a href="#"><i class="bi bi-collection"></i> My Classes</a></li>
-        <li><a href="#"><i class="bi bi-calendar-check"></i> Attendance</a></li>
-        <li><a href="#"><i class="bi bi-file-earmark-text"></i> Notes</a></li>
-        <li><a href="#"><i class="bi bi-clipboard-check"></i> Assignments</a></li>
-        <li><a href="{% url 'teacher_students' %}"><i class="bi bi-people"></i> Students</a></li>
-        <li><a href="#"><i class="bi bi-calendar3"></i> Calendar</a></li>
-        <li><a href="#"><i class="bi bi-chat-dots"></i> Messages</a></li>
-        <li><a href="#"><i class="bi bi-bar-chart"></i> Reports</a></li>
-        <li><a href="#"><i class="bi bi-gear"></i> Settings</a></li>
-    </ul>
-</aside>
+{% include "partials/teacher_sidebar.html" %}
 {% endblock %}
 
 {% block dashboard_content %}
@@ -30,7 +16,7 @@
             </div>
             <div class="tch-stat-count">{{ stats.classes }}</div>
             <div class="tch-stat-label">My Classes</div>
-            <a href="#" class="tch-stat-btn">View Classes</a>
+            <a href="{% url 'teacher_students' %}" class="tch-stat-btn">View Students</a>
         </article>
         <article class="tch-stat-card purple">
             <div class="tch-stat-top">
@@ -46,15 +32,15 @@
             </div>
             <div class="tch-stat-count">{{ stats.attendance_pct }}%</div>
             <div class="tch-stat-label">Attendance</div>
-            <a href="#" class="tch-stat-btn">Upload</a>
+            <a href="{% url 'teacher_attendance_upload' %}" class="tch-stat-btn">Upload</a>
         </article>
         <article class="tch-stat-card orange">
             <div class="tch-stat-top">
                 <div class="tch-stat-icon"><i class="bi bi-journal-check"></i></div>
             </div>
             <div class="tch-stat-count">{{ stats.assignments }}</div>
-            <div class="tch-stat-label">Assignments</div>
-            <a href="#" class="tch-stat-btn">Create New</a>
+            <div class="tch-stat-label">Pending Reviews</div>
+            <a href="{% url 'teacher_assignments' %}" class="tch-stat-btn">Review</a>
         </article>
         <article class="tch-stat-card pink">
             <div class="tch-stat-top">
@@ -62,7 +48,7 @@
             </div>
             <div class="tch-stat-count">{{ stats.notes }}</div>
             <div class="tch-stat-label">Notes</div>
-            <a href="#" class="tch-stat-btn">Upload</a>
+            <a href="{% url 'teacher_material_upload' %}" class="tch-stat-btn">Upload</a>
         </article>
     </div>
 </section>
@@ -70,28 +56,28 @@
 <section aria-labelledby="actions-heading">
     <h2 class="tch-section-title" id="actions-heading">Quick Actions</h2>
     <div class="tch-actions">
-        <a href="#" class="tch-action-card">
+        <a href="{% url 'teacher_attendance_upload' %}" class="tch-action-card">
             <div class="tch-action-icon"><i class="bi bi-cloud-upload"></i></div>
             <div>
                 <h3>Upload Attendance</h3>
                 <p>Mark daily class attendance</p>
             </div>
         </a>
-        <a href="#" class="tch-action-card">
+        <a href="{% url 'teacher_material_upload' %}" class="tch-action-card">
             <div class="tch-action-icon"><i class="bi bi-file-earmark-arrow-up"></i></div>
             <div>
                 <h3>Upload Notes</h3>
                 <p>Share lecture materials</p>
             </div>
         </a>
-        <a href="#" class="tch-action-card">
-            <div class="tch-action-icon"><i class="bi bi-plus-circle"></i></div>
+        <a href="{% url 'teacher_students' %}" class="tch-action-card">
+            <div class="tch-action-icon"><i class="bi bi-people"></i></div>
             <div>
-                <h3>Create Assignment</h3>
-                <p>Publish new coursework</p>
+                <h3>View Students</h3>
+                <p>Manage your student roster</p>
             </div>
         </a>
-        <a href="#" class="tch-action-card">
+        <a href="{% url 'teacher_assignments' %}" class="tch-action-card">
             <div class="tch-action-icon"><i class="bi bi-inbox"></i></div>
             <div>
                 <h3>View Submitted Assignments</h3>

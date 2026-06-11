@@ -38,6 +38,11 @@
                     {% if form.email.errors %}<span class="adm-field-error">{{ form.email.errors.0 }}</span>{% endif %}
                 </div>
                 <div class="adm-field adm-field-full">
+                    <label for="id_roll_number">Roll number</label>
+                    {{ form.roll_number }}
+                    {% if form.roll_number.errors %}<span class="adm-field-error">{{ form.roll_number.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="adm-field adm-field-full">
                     <label for="id_department">Department</label>
                     {{ form.department }}
                     {% if form.department.errors %}<span class="adm-field-error">{{ form.department.errors.0 }}</span>{% endif %}

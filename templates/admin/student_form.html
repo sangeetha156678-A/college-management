@@ -7,6 +7,8 @@
 {% endblock %}
 
 {% block dashboard_content %}
+{% include "admin/partials/student_credentials_banner.html" %}
+
 <div class="adm-page-head">
     <div>
         <h2 class="tch-section-title" style="margin:0;">Create Student</h2>
@@ -38,6 +40,11 @@
                     {% if form.email.errors %}<span class="adm-field-error">{{ form.email.errors.0 }}</span>{% endif %}
                 </div>
                 <div class="adm-field adm-field-full">
+                    <label for="id_roll_number">Roll number</label>
+                    {{ form.roll_number }}
+                    {% if form.roll_number.errors %}<span class="adm-field-error">{{ form.roll_number.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="adm-field adm-field-full">
                     <label for="id_department">Department</label>
                     {{ form.department }}
                     {% if form.department.errors %}<span class="adm-field-error">{{ form.department.errors.0 }}</span>{% endif %}
@@ -66,4 +73,19 @@
 
 {% block extra_js %}
 {% include "admin/partials/student_academic_filter_script.html" %}
+{% if new_student_credentials %}
+<script>
+document.querySelectorAll('.adm-copy-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+        var el = document.getElementById(btn.getAttribute('data-copy-target'));
+        if (!el) return;
+        navigator.clipboard.writeText(el.textContent.trim()).then(function () {
+            var icon = btn.querySelector('i');
+            icon.className = 'bi bi-check2';
+            setTimeout(function () { icon.className = 'bi bi-clipboard'; }, 1500);
+        });
+    });
+});
+</script>
+{% endif %}
 {% endblock %}

@@ -23,6 +23,45 @@
             {% endfor %}
         </ul>
         {% endif %}
+
+        {% if import_credentials %}
+        <div class="adm-import-credentials">
+            <div class="adm-page-head" style="margin:1rem 0 0.75rem;">
+                <div>
+                    <h4 style="margin:0;font-size:0.95rem;">Generated login credentials</h4>
+                    <p class="adm-subtitle" style="margin-top:0.25rem;">
+                        Each imported student received a unique username and temporary password.
+                        Students log in at <code>/accounts/login/?role=student</code>.
+                    </p>
+                </div>
+                <a href="{% url 'admin_student_import_credentials' %}" class="adm-btn adm-btn-secondary adm-btn-sm">
+                    <i class="bi bi-download"></i> Download Excel
+                </a>
+            </div>
+            <div class="adm-table-wrap">
+                <table class="adm-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Username</th>
+                            <th scope="col">Password</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for account in import_credentials %}
+                        <tr>
+                            <td><strong>{{ account.name }}</strong></td>
+                            <td>{{ account.email }}</td>
+                            <td><code>{{ account.username }}</code></td>
+                            <td><code>{{ account.password }}</code></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </section>
 {% endif %}

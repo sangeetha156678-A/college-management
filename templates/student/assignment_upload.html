@@ -1,0 +1,50 @@
+{% extends "dashboard_base.html" %}
+{% load static %}
+
+{% block title %}Upload Assignment{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin-dashboard.css' %}">
+{% endblock %}
+
+{% block header_sub_label %}{{ student_display_name }}{% endblock %}
+
+{% block sidebar %}
+{% include "partials/student_sidebar.html" %}
+{% endblock %}
+
+{% block dashboard_content %}
+{% include "partials/flash_messages.html" %}
+
+<div class="erp-page-bar">
+    <span class="erp-page-title">Upload Assignment</span>
+    <a href="{% url 'student_assignments' %}" class="adm-btn adm-btn-ghost adm-btn-sm">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+</div>
+
+<section class="tch-panel adm-panel-spaced adm-form-panel" style="margin-top:1rem;">
+    <div class="tch-panel-body">
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            <div class="adm-form-grid">
+                <div class="adm-field adm-field-full">
+                    <label for="id_subject">Subject</label>
+                    {{ form.subject }}
+                    {% if form.subject.errors %}<span class="adm-field-error">{{ form.subject.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="adm-field adm-field-full">
+                    <label for="id_file">Assignment PDF</label>
+                    {{ form.file }}
+                    {% if form.file.errors %}<span class="adm-field-error">{{ form.file.errors.0 }}</span>{% endif %}
+                </div>
+            </div>
+            <div class="adm-form-actions">
+                <button type="submit" class="adm-btn adm-btn-primary">
+                    <i class="bi bi-upload"></i> Submit Assignment
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

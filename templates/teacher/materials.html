@@ -1,0 +1,80 @@
+{% extends "teacher_base.html" %}
+{% load static %}
+
+{% block title %}Study Materials{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin-dashboard.css' %}">
+{% endblock %}
+
+{% block sidebar %}
+{% include "partials/teacher_sidebar.html" %}
+{% endblock %}
+
+{% block dashboard_content %}
+{% include "partials/flash_messages.html" %}
+
+<div class="adm-page-head">
+    <div>
+        <h2 class="tch-section-title" style="margin:0;">Study Materials</h2>
+        <p class="adm-subtitle">Upload and manage PDF notes for your subjects</p>
+    </div>
+    <a href="{% url 'teacher_material_upload' %}" class="adm-btn adm-btn-primary">
+        <i class="bi bi-cloud-upload"></i> Upload Notes
+    </a>
+</div>
+
+<form method="get" class="adm-filter-bar" style="margin-bottom:1rem;">
+    <select name="subject" class="adm-input" onchange="this.form.submit()">
+        <option value="">All subjects</option>
+        {% for subject in subjects %}
+        <option value="{{ subject.pk }}"{% if selected_subject_id == subject.pk|stringformat:"s" %} selected{% endif %}>
+            {{ subject.code }} — {{ subject.name }}
+        </option>
+        {% endfor %}
+    </select>
+</form>
+
+<section class="tch-panel adm-panel-spaced">
+    <div class="tch-panel-body">
+        <div class="adm-table-wrap">
+            <table class="adm-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Subject</th>
+                        <th>Topic</th>
+                        <th>Size</th>
+                        <th>Uploaded</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for material in materials %}
+                    <tr>
+                        <td><strong>{{ material.title }}</strong></td>
+                        <td>{{ material.subject.code }}</td>
+                        <td>{{ material.topic|default:"—" }}</td>
+                        <td>{{ material.file_size_display }}</td>
+                        <td>{{ material.uploaded_at|date:"M d, Y" }}</td>
+                        <td>
+                            <form method="post" action="{% url 'teacher_material_delete' material.pk %}" style="display:inline;"
+                                  onsubmit="return confirm('Delete this material?');">
+                                {% csrf_token %}
+                                <button type="submit" class="adm-btn adm-btn-ghost adm-btn-sm">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="adm-empty-cell">No materials uploaded yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends "dashboard_base.html" %}
+{% load static %}
+
+{% block title %}Assignments{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/teacher-dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin-dashboard.css' %}">
+<style>
+.subject-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; margin-top: 1rem; }
+.subject-card { background: #fff; border-radius: 12px; border: 1px solid #e8ecf1; overflow: hidden; }
+.subject-card-head { padding: 1rem 1.25rem; border-bottom: 1px solid #e8ecf1; display: flex; justify-content: space-between; align-items: center; }
+.subject-card-head h3 { margin: 0; font-size: 1rem; }
+.subject-card-body { padding: 1rem 1.25rem; }
+.status-pending { color: #ca8a04; }
+.status-approved { color: #16a34a; }
+.status-rejected { color: #dc2626; }
+.status-needs_rework { color: #ea580c; }
+.version-history { margin-top: 0.75rem; font-size: 0.85rem; }
+.version-history summary { cursor: pointer; color: #4f46e5; font-weight: 600; }
+.version-history ul { margin: 0.5rem 0 0; padding-left: 1.25rem; }
+</style>
+{% endblock %}
+
+{% block header_sub_label %}{{ student_display_name }}{% endblock %}
+
+{% block sidebar %}
+{% include "partials/student_sidebar.html" %}
+{% endblock %}
+
+{% block dashboard_content %}
+{% include "partials/flash_messages.html" %}
+
+<div class="erp-page-bar">
+    <span class="erp-page-title">Assignments</span>
+    <a href="{% url 'student_assignment_upload' %}" class="adm-btn adm-btn-primary adm-btn-sm">
+        <i class="bi bi-upload"></i> Upload Assignment
+    </a>
+</div>
+
+<div class="subject-card-grid">
+    {% for item in subject_data %}
+    <article class="subject-card">
+        <div class="subject-card-head">
+            <h3>{{ item.subject.code }} — {{ item.subject.name }}</h3>
+            {% if item.latest %}
+            <span class="status-{{ item.latest.status }}">{{ item.latest.get_status_display }}</span>
+            {% else %}
+            <span style="color:#6b7280;">Not submitted</span>
+            {% endif %}
+        </div>
+        <div class="subject-card-body">
+            {% if item.latest %}
+            <p><strong>Version:</strong> v{{ item.latest.version }}</p>
+            <p><strong>Submitted:</strong> {{ item.latest.submitted_at|date:"M d, Y H:i" }}</p>
+            {% if item.latest.feedback %}
+            <p><strong>Feedback:</strong> {{ item.latest.feedback }}</p>
+            {% endif %}
+            <a href="{% url 'student_assignment_download' item.latest.pk %}" class="adm-btn adm-btn-ghost adm-btn-sm">
+                <i class="bi bi-download"></i> Download
+            </a>
+            {% if item.can_submit %}
+            <a href="{% url 'student_assignment_upload' %}?subject={{ item.subject.pk }}" class="adm-btn adm-btn-primary adm-btn-sm">
+                <i class="bi bi-arrow-repeat"></i> Re-upload
+            </a>
+            {% endif %}
+
+            {% if item.submissions|length > 1 %}
+            <details class="version-history">
+                <summary>Submission history ({{ item.submissions|length }} versions)</summary>
+                <ul>
+                    {% for sub in item.submissions %}
+                    <li>
+                        v{{ sub.version }} — {{ sub.get_status_display }} — {{ sub.submitted_at|date:"M d, Y" }}
+                        {% if sub.feedback %} — "{{ sub.feedback }}"{% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </details>
+            {% endif %}
+            {% else %}
+            <p style="color:#6b7280; margin-bottom:0.75rem;">No submission yet.</p>
+            <a href="{% url 'student_assignment_upload' %}?subject={{ item.subject.pk }}" class="adm-btn adm-btn-primary adm-btn-sm">
+                <i class="bi bi-upload"></i> Submit
+            </a>
+            {% endif %}
+        </div>
+    </article>
+    {% empty %}
+    <p>No subjects found for your semester.</p>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends "teacher_base.html" %}
+{% load static %}
+
+{% block title %}Attendance{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin-dashboard.css' %}">
+{% endblock %}
+
+{% block sidebar %}
+{% include "partials/teacher_sidebar.html" %}
+{% endblock %}
+
+{% block dashboard_content %}
+{% include "partials/flash_messages.html" %}
+
+<div class="adm-page-head">
+    <div>
+        <h2 class="tch-section-title" style="margin:0;">Attendance</h2>
+        <p class="adm-subtitle">Upload and manage attendance for your assigned subjects</p>
+    </div>
+    <div class="adm-page-actions">
+        <a href="{% url 'teacher_attendance_template' %}" class="adm-btn adm-btn-ghost">
+            <i class="bi bi-download"></i> Download Template
+        </a>
+        <a href="{% url 'teacher_attendance_upload' %}" class="adm-btn adm-btn-primary">
+            <i class="bi bi-cloud-upload"></i> Upload Attendance
+        </a>
+    </div>
+</div>
+
+<section class="tch-panel adm-panel-spaced">
+    <div class="tch-panel-head">
+        <h3>Recent Uploads</h3>
+    </div>
+    <div class="tch-panel-body">
+        <div class="adm-table-wrap">
+            <table class="adm-table">
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Roll No.</th>
+                        <th>Subject</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in recent_records %}
+                    <tr>
+                        <td><strong>{{ record.student.user.display_name }}</strong></td>
+                        <td><code>{{ record.student.display_roll_number }}</code></td>
+                        <td>{{ record.subject.code }}</td>
+                        <td>{{ record.date }}</td>
+                        <td>
+                            {% if record.status == 'present' %}
+                            <span class="adm-badge adm-badge-success">Present</span>
+                            {% else %}
+                            <span class="adm-badge adm-badge-danger">Absent</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="adm-empty-cell">No attendance records yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

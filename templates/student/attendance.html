@@ -1,0 +1,84 @@
+{% extends "dashboard_base.html" %}
+{% load static %}
+
+{% block title %}Attendance{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/teacher-dashboard.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin-dashboard.css' %}">
+<style>
+.subject-card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; margin-top: 1rem; }
+.subject-card { background: #fff; border-radius: 12px; border: 1px solid #e8ecf1; overflow: hidden; }
+.subject-card-head { padding: 1rem 1.25rem; border-bottom: 1px solid #e8ecf1; display: flex; justify-content: space-between; align-items: center; }
+.subject-card-head h3 { margin: 0; font-size: 1rem; }
+.health-green { color: #16a34a; }
+.health-yellow { color: #ca8a04; }
+.health-red { color: #dc2626; }
+.subject-card-body { padding: 1rem 1.25rem; }
+.attendance-stats { display: flex; gap: 1.5rem; margin-bottom: 0.75rem; font-size: 0.9rem; }
+.attendance-details summary { cursor: pointer; color: #4f46e5; font-weight: 600; font-size: 0.875rem; }
+.attendance-details ul { margin: 0.5rem 0 0; padding-left: 1.25rem; font-size: 0.85rem; }
+</style>
+{% endblock %}
+
+{% block header_sub_label %}{{ student_display_name }}{% endblock %}
+
+{% block sidebar %}
+{% include "partials/student_sidebar.html" %}
+{% endblock %}
+
+{% block dashboard_content %}
+{% include "partials/flash_messages.html" %}
+
+<div class="erp-page-bar">
+    <span class="erp-page-title">Attendance Dashboard</span>
+</div>
+
+{% if summary.overall_total %}
+<section class="tch-stats" style="margin-bottom:1.5rem;">
+    <article class="tch-stat-card green">
+        <div class="tch-stat-count">{{ summary.overall_percentage }}%</div>
+        <div class="tch-stat-label">Overall Attendance</div>
+    </article>
+    <article class="tch-stat-card blue">
+        <div class="tch-stat-count">{{ summary.overall_attended }}</div>
+        <div class="tch-stat-label">Classes Attended</div>
+    </article>
+    <article class="tch-stat-card purple">
+        <div class="tch-stat-count">{{ summary.overall_total }}</div>
+        <div class="tch-stat-label">Total Classes</div>
+    </article>
+</section>
+{% endif %}
+
+<div class="subject-card-grid">
+    {% for item in summary.subjects %}
+    <article class="subject-card">
+        <div class="subject-card-head">
+            <h3>{{ item.subject.code }} — {{ item.subject.name }}</h3>
+            <span class="health-{{ item.health }}"><strong>{{ item.percentage }}%</strong></span>
+        </div>
+        <div class="subject-card-body">
+            <div class="attendance-stats">
+                <span>Attended: <strong>{{ item.attended }}</strong></span>
+                <span>Total: <strong>{{ item.total }}</strong></span>
+            </div>
+            {% if item.records %}
+            <details class="attendance-details">
+                <summary>View date-wise breakdown</summary>
+                <ul>
+                    {% for record in item.records %}
+                    <li>{{ record.date }} — {% if record.status == 'present' %}Present{% else %}Absent{% endif %}</li>
+                    {% endfor %}
+                </ul>
+            </details>
+            {% else %}
+            <p style="color:#6b7280; font-size:0.875rem; margin:0;">No attendance records yet.</p>
+            {% endif %}
+        </div>
+    </article>
+    {% empty %}
+    <p>No subjects found for your semester.</p>
+    {% endfor %}
+</div>
+{% endblock %}

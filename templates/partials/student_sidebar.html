@@ -1,0 +1,50 @@
+{% load static %}
+<aside class="erp-sidebar" id="erp-sidebar">
+    <div class="erp-profile-card">
+        <img src="{% static 'img/default-avatar.svg' %}" alt="Student profile" class="erp-profile-photo">
+        <h2 class="erp-profile-name">STUDENT</h2>
+        <p class="erp-profile-detail">
+            <strong>Registration No.</strong>
+            {{ registration_no }}
+        </p>
+        <p class="erp-profile-detail">
+            <strong>Year</strong>
+            {{ year_label }}
+        </p>
+        <p class="erp-profile-detail">
+            <strong>Semester</strong>
+            {{ semester }}
+        </p>
+        <p class="erp-profile-detail">
+            <strong>Course</strong>
+            {{ course }}
+        </p>
+    </div>
+
+    <ul class="erp-side-nav">
+        <li>
+            <a href="{% url 'student_dashboard' %}"{% if active_nav == 'dashboard' %} class="active"{% endif %}>
+                <span class="nav-icon"><i class="bi bi-speedometer2"></i></span>
+                Dashboard
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'student_attendance' %}"{% if active_nav == 'attendance' %} class="active"{% endif %}>
+                <span class="nav-icon"><i class="bi bi-calendar-check"></i></span>
+                Attendance
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'student_materials' %}"{% if active_nav == 'materials' %} class="active"{% endif %}>
+                <span class="nav-icon"><i class="bi bi-file-earmark-text"></i></span>
+                Materials
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'student_assignments' %}"{% if active_nav == 'assignments' %} class="active"{% endif %}>
+                <span class="nav-icon"><i class="bi bi-journal-check"></i></span>
+                Assignments
+            </a>
+        </li>
+    </ul>
+</aside>

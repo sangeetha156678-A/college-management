@@ -14,9 +14,10 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
-from accounts.views import student_dashboard, teacher_dashboard
 from django.shortcuts import render
 
 def home(request):
@@ -33,7 +34,10 @@ urlpatterns = [
     path('teacher/', include('teachers.urls')),
 
     path('admin-dashboard/', include('accounts.admin_urls')),
-    path('student-dashboard/', student_dashboard, name='student_dashboard'),
-    path('lecturer-dashboard/', teacher_dashboard, name='lecturer_dashboard'),
-    path('teacher-dashboard/', teacher_dashboard, name='teacher_dashboard'),
+    path('student-dashboard/', include('students.urls')),
+    path('lecturer-dashboard/', include('teachers.urls')),
+    path('teacher-dashboard/', include('teachers.urls')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

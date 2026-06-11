@@ -465,6 +465,12 @@ class CreateStudentForm(_StudentAcademicFieldsMixin, forms.Form):
     first_name = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class': 'adm-input'}))
     last_name = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class': 'adm-input'}))
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'adm-input'}))
+    roll_number = forms.CharField(
+        max_length=50,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'adm-input', 'placeholder': 'Optional — defaults to username'}),
+        label='Roll number',
+    )
     department = forms.ModelChoiceField(
         queryset=Department.objects.filter(is_active=True),
         widget=forms.Select(attrs={'class': 'adm-input', 'id': 'id_department'}),
@@ -494,6 +500,12 @@ class EditStudentForm(_StudentAcademicFieldsMixin, forms.Form):
     first_name = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class': 'adm-input'}))
     last_name = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class': 'adm-input'}))
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'adm-input'}))
+    roll_number = forms.CharField(
+        max_length=50,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'adm-input'}),
+        label='Roll number',
+    )
     department = forms.ModelChoiceField(
         queryset=Department.objects.filter(is_active=True),
         widget=forms.Select(attrs={'class': 'adm-input', 'id': 'id_department'}),
@@ -519,6 +531,7 @@ class EditStudentForm(_StudentAcademicFieldsMixin, forms.Form):
             self.fields['first_name'].initial = user.first_name
             self.fields['last_name'].initial = user.last_name
             self.fields['email'].initial = user.email
+            self.fields['roll_number'].initial = student.roll_number or ''
             self.fields['year'].initial = student.year_id
             self.fields['semester'].initial = student.semester_id
             if student.year_id:

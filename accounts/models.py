@@ -26,6 +26,7 @@ class CustomUser(AbstractUser):
 
 class Student(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='student_profile')
+    roll_number = models.CharField(max_length=50, blank=True, null=True, unique=True)
     year = models.ForeignKey(
         'academics.Year',
         on_delete=models.PROTECT,
@@ -39,6 +40,10 @@ class Student(models.Model):
 
     def __str__(self):
         return self.user.display_name
+
+    @property
+    def display_roll_number(self):
+        return self.roll_number or self.user.username
 
     @property
     def department(self):

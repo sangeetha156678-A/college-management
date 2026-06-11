@@ -21,7 +21,7 @@ LOGIN_ROLE_MAP = {
     'lecturer': {
         'db_role': 'teacher',
         'label': 'Lecturer',
-        'redirect': 'lecturer_dashboard',
+        'redirect': 'teacher_dashboard',
     },
     'student': {
         'db_role': 'student',
@@ -141,18 +141,46 @@ def student_dashboard(request):
     if display_name == request.user.username:
         display_name = display_name.upper()
 
+    student = getattr(request.user, 'student_profile', None)
+    registration_no = request.user.username
+    semester = '—'
+    course = '—'
+    section = '—'
+    year_label = '—'
+    attendance_metric = '-'
+    pending_assignments = 0
+
+    if student:
+        registration_no = student.display_roll_number
+        semester = f'Semester {student.semester.number}'
+        course = student.year.department.name
+        year_label = f'Year {student.year.number}'
+
+        from attendance.services.attendance_service import get_attendance_summary_for_student
+        from assignments.models import AssignmentSubmission
+
+        summary = get_attendance_summary_for_student(student)
+        if summary['overall_total']:
+            attendance_metric = f"{summary['overall_percentage']}%"
+        pending_assignments = AssignmentSubmission.objects.filter(
+            student=student,
+            status=AssignmentSubmission.STATUS_PENDING,
+        ).count()
+
     return render(request, 'student_dashboard.html', {
         'student_display_name': display_name,
-        'registration_no': getattr(request.user, 'registration_no', '25BBCAI008'),
-        'semester': 'Sem II',
-        'course': 'BCA (AI & ML)',
-        'section': 'A',
+        'registration_no': registration_no,
+        'semester': semester,
+        'course': course,
+        'year_label': year_label,
+        'section': section,
+        'active_nav': 'dashboard',
         'current_datetime': timezone.localtime(timezone.now()).strftime('%b %d, %Y %I:%M:%S %p').upper(),
         'metrics': {
             'announcements': 0,
-            'attendance': '-',
-            'assessment': 0,
-            'tasks': 4,
+            'attendance': attendance_metric,
+            'assessment': pending_assignments,
+            'tasks': pending_assignments,
             'placement': 0,
         },
     })
@@ -187,23 +215,38 @@ def teacher_dashboard(request):
     if request.user.role != 'teacher':
         return redirect('login')
 
-    from accounts.services.student_service import get_students_for_teacher
+    from accounts.services.portal_scope import get_students_for_teacher
 
     teacher = getattr(request.user, 'teacher_profile', None)
     if teacher is None:
         return redirect('login')
+    from assignments.models import AssignmentSubmission, StudyMaterial
+    from attendance.models import AttendanceRecord
 
     students_qs = get_students_for_teacher(teacher).filter(user__is_active=True)
     semester_count = teacher.subject_assignments.values('subject__semester_id').distinct().count()
+    subject_ids = teacher.subject_assignments.values_list('subject_id', flat=True)
+
+    attendance_records = AttendanceRecord.objects.filter(subject_id__in=subject_ids)
+    attendance_total = attendance_records.count()
+    attendance_present = attendance_records.filter(status=AttendanceRecord.STATUS_PRESENT).count()
+    attendance_pct = round((attendance_present / attendance_total) * 100) if attendance_total else 0
+
+    pending_submissions = AssignmentSubmission.objects.filter(
+        subject_id__in=subject_ids,
+        status=AssignmentSubmission.STATUS_PENDING,
+    ).count()
+    notes_count = StudyMaterial.objects.filter(uploaded_by=teacher, is_active=True).count()
 
     ctx = _teacher_portal_context(request)
     ctx.update({
+        'active_nav': 'dashboard',
         'stats': {
             'classes': semester_count,
             'students': students_qs.count(),
-            'attendance_pct': 87,
-            'assignments': 12,
-            'notes': 24,
+            'attendance_pct': attendance_pct,
+            'assignments': pending_submissions,
+            'notes': notes_count,
         },
     })
     return render(request, 'teacher_dashboard.html', ctx)
@@ -214,17 +257,27 @@ def teacher_students(request):
     if request.user.role != 'teacher':
         return redirect('login')
 
-    from accounts.services.student_service import get_students_for_teacher
+    from accounts.services.portal_scope import get_students_for_teacher, get_subjects_for_teacher
 
     teacher = getattr(request.user, 'teacher_profile', None)
     if teacher is None:
         return redirect('login')
 
+    subjects = get_subjects_for_teacher(teacher)
+    subject_id = request.GET.get('subject')
+    selected_subject = None
+
     students = get_students_for_teacher(teacher).filter(user__is_active=True)
+    if subject_id:
+        selected_subject = subjects.filter(pk=subject_id).first()
+        if selected_subject:
+            students = get_students_for_teacher(teacher, subject=selected_subject).filter(user__is_active=True)
 
     ctx = _teacher_portal_context(request)
     ctx.update({
         'students': students,
+        'subjects': subjects,
+        'selected_subject_id': str(selected_subject.pk) if selected_subject else '',
         'active_nav': 'students',
     })
     return render(request, 'teacher_students.html', ctx)

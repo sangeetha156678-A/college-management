@@ -414,6 +414,7 @@ def admin_students(request):
         'students_page': page,
         'new_student_credentials': request.session.pop('new_student_credentials', None),
         'import_summary': request.session.pop('student_import_summary', None),
+        'import_credentials': request.session.get('student_import_credentials'),
     })
     return render(request, 'admin/students.html', ctx)
 
@@ -433,10 +434,11 @@ def admin_student_create(request):
                     email=form.cleaned_data['email'],
                     year=form.cleaned_data['year'],
                     semester=form.cleaned_data['semester'],
+                    roll_number=form.cleaned_data.get('roll_number', ''),
                     performed_by=request.user,
                 )
                 user = student.user
-                request.session['new_student_credentials'] = {
+                credentials = {
                     'name': user.display_name,
                     'email': user.email,
                     'username': user.username,
@@ -444,9 +446,13 @@ def admin_student_create(request):
                 }
                 messages.success(
                     request,
-                    f'Student account created for {user.display_name}. Login details are shown below.',
+                    f'Student account created for {user.display_name}. Copy the login details below.',
                 )
-                return redirect('admin_students')
+                ctx.update({
+                    'form': CreateStudentForm(),
+                    'new_student_credentials': credentials,
+                })
+                return render(request, 'admin/student_form.html', ctx)
             except ValueError as exc:
                 messages.error(request, str(exc))
     else:
@@ -470,7 +476,18 @@ def admin_student_import(request):
                 semester=form.cleaned_data['semester'],
                 performed_by=request.user,
             )
-            request.session['student_import_summary'] = result
+            request.session['student_import_summary'] = {
+                'created': result['created'],
+                'skipped': result['skipped'],
+                'errors': result['errors'],
+            }
+            if result.get('accounts'):
+                request.session['student_import_credentials'] = result['accounts']
+                messages.info(
+                    request,
+                    'Login usernames and passwords for imported students are listed below. '
+                    'Download and share them with students.',
+                )
             if result['created']:
                 messages.success(
                     request,
@@ -500,8 +517,8 @@ def admin_student_import_template(request):
     workbook = Workbook()
     sheet = workbook.active
     sheet.title = 'Students'
-    sheet.append(['first_name', 'last_name', 'email'])
-    sheet.append(['Jane', 'Doe', 'jane.doe@example.com'])
+    sheet.append(['first_name', 'last_name', 'email', 'roll_number'])
+    sheet.append(['Jane', 'Doe', 'jane.doe@example.com', 'BCA2026001'])
 
     buffer = BytesIO()
     workbook.save(buffer)
@@ -512,6 +529,38 @@ def admin_student_import_template(request):
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     )
     response['Content-Disposition'] = 'attachment; filename="student_import_template.xlsx"'
+    return response
+
+
+@login_required(login_url='/accounts/login/')
+@admin_required
+def admin_student_import_credentials(request):
+    accounts = request.session.pop('student_import_credentials', None)
+    if not accounts:
+        messages.error(request, 'No import credentials available to download.')
+        return redirect('admin_students')
+
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = 'Student Logins'
+    sheet.append(['name', 'email', 'username', 'password'])
+    for account in accounts:
+        sheet.append([
+            account['name'],
+            account['email'],
+            account['username'],
+            account['password'],
+        ])
+
+    buffer = BytesIO()
+    workbook.save(buffer)
+    buffer.seek(0)
+
+    response = HttpResponse(
+        buffer.getvalue(),
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = 'attachment; filename="student_login_credentials.xlsx"'
     return response
 
 
@@ -549,6 +598,7 @@ def admin_student_edit(request, student_id):
                     email=form.cleaned_data['email'],
                     year=form.cleaned_data['year'],
                     semester=form.cleaned_data['semester'],
+                    roll_number=form.cleaned_data.get('roll_number', ''),
                     performed_by=request.user,
                 )
                 messages.success(request, f'Student profile updated for {student.user.display_name}.')

@@ -182,6 +182,10 @@ STORAGES = {
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+MAX_PDF_SIZE = 10 * 1024 * 1024
+MAX_XLSX_SIZE = 5 * 1024 * 1024
+SEND_PORTAL_NOTIFICATIONS = os.environ.get('SEND_PORTAL_NOTIFICATIONS', 'True') == 'True'
+
 # ==========================================================
 # DEFAULT PRIMARY KEY
 # ==========================================================

@@ -13,6 +13,7 @@ _HEADER_ALIASES = {
     'first_name': {'first_name', 'firstname', 'first name', 'fname'},
     'last_name': {'last_name', 'lastname', 'last name', 'lname', 'surname'},
     'email': {'email', 'email address', 'e-mail', 'mail'},
+    'roll_number': {'roll_number', 'roll number', 'roll no', 'roll no.', 'rollno'},
 }
 
 
@@ -39,6 +40,7 @@ def create_student_account(
     email,
     year,
     semester,
+    roll_number='',
     performed_by=None,
 ):
     user, temp_password = create_user_account(
@@ -51,6 +53,12 @@ def create_student_account(
         performed_by=performed_by,
     )
     student = Student.objects.get(user=user)
+    roll_number = (roll_number or '').strip()
+    if roll_number:
+        if Student.objects.filter(roll_number__iexact=roll_number).exclude(pk=student.pk).exists():
+            raise ValueError(f'A student with roll number "{roll_number}" already exists.')
+        student.roll_number = roll_number
+        student.save(update_fields=['roll_number'])
     return student, temp_password
 
 
@@ -62,6 +70,7 @@ def update_student_profile(
     email,
     year,
     semester,
+    roll_number='',
     performed_by=None,
 ):
     email = email.strip().lower()
@@ -75,9 +84,14 @@ def update_student_profile(
         user.email = email
         user.save(update_fields=['first_name', 'last_name', 'email'])
 
+        roll_number = (roll_number or '').strip() or None
+        if roll_number and Student.objects.filter(roll_number__iexact=roll_number).exclude(pk=student.pk).exists():
+            raise ValueError(f'A student with roll number "{roll_number}" already exists.')
+
         student.year = year
         student.semester = semester
-        student.save(update_fields=['year', 'semester'])
+        student.roll_number = roll_number
+        student.save(update_fields=['year', 'semester', 'roll_number'])
 
         ActivityLog.objects.create(
             performed_by=performed_by,
@@ -95,7 +109,7 @@ def import_students_from_excel(uploaded_file, *, year, semester, performed_by=No
     try:
         header_row = next(rows)
     except StopIteration:
-        return {'created': 0, 'skipped': 0, 'errors': ['The Excel file is empty.']}
+        return {'created': 0, 'skipped': 0, 'errors': ['The Excel file is empty.'], 'accounts': []}
 
     column_map = _map_headers(header_row)
     missing = [field for field in ('first_name', 'last_name', 'email') if field not in column_map]
@@ -107,11 +121,13 @@ def import_students_from_excel(uploaded_file, *, year, semester, performed_by=No
                 'Missing required columns. Use: first_name, last_name, email '
                 '(row 1 headers).',
             ],
+            'accounts': [],
         }
 
     created = 0
     skipped = 0
     errors = []
+    accounts = []
 
     for row_number, row in enumerate(rows, start=2):
         if not row or all(cell is None or str(cell).strip() == '' for cell in row):
@@ -126,21 +142,33 @@ def import_students_from_excel(uploaded_file, *, year, semester, performed_by=No
             skipped += 1
             continue
 
+        roll_number = ''
+        if 'roll_number' in column_map:
+            roll_number = str(row[column_map['roll_number']] or '').strip()
+
         try:
-            create_student_account(
+            student, temp_password = create_student_account(
                 first_name=first_name,
                 last_name=last_name,
                 email=email,
                 year=year,
                 semester=semester,
+                roll_number=roll_number,
                 performed_by=performed_by,
             )
+            user = student.user
+            accounts.append({
+                'name': user.display_name,
+                'email': user.email,
+                'username': user.username,
+                'password': temp_password,
+            })
             created += 1
         except ValueError as exc:
             errors.append(f'Row {row_number}: {exc}')
             skipped += 1
 
-    return {'created': created, 'skipped': skipped, 'errors': errors}
+    return {'created': created, 'skipped': skipped, 'errors': errors, 'accounts': accounts}
 
 
 def get_students_for_teacher(teacher):

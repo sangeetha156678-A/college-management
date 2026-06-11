@@ -1,0 +1,10 @@
+<aside class="tch-sidebar" id="tch-sidebar">
+    <p class="tch-side-label">Faculty Menu</p>
+    <ul class="tch-side-nav">
+        <li><a href="{% url 'teacher_dashboard' %}"{% if active_nav == 'dashboard' %} class="active"{% endif %}><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+        <li><a href="{% url 'teacher_students' %}"{% if active_nav == 'students' %} class="active"{% endif %}><i class="bi bi-people"></i> Students</a></li>
+        <li><a href="{% url 'teacher_attendance' %}"{% if active_nav == 'attendance' %} class="active"{% endif %}><i class="bi bi-calendar-check"></i> Attendance</a></li>
+        <li><a href="{% url 'teacher_materials' %}"{% if active_nav == 'materials' %} class="active"{% endif %}><i class="bi bi-file-earmark-text"></i> Notes</a></li>
+        <li><a href="{% url 'teacher_assignments' %}"{% if active_nav == 'assignments' %} class="active"{% endif %}><i class="bi bi-clipboard-check"></i> Assignments</a></li>
+    </ul>
+</aside>

@@ -6,67 +6,7 @@
 {% block header_sub_label %}{{ student_display_name }}{% endblock %}
 
 {% block sidebar %}
-<aside class="erp-sidebar" id="erp-sidebar">
-    <div class="erp-profile-card">
-        <img src="{% static 'img/default-avatar.svg' %}" alt="Student profile" class="erp-profile-photo">
-        <h2 class="erp-profile-name">STUDENT</h2>
-        <p class="erp-profile-detail">
-            <strong>Registration No.</strong>
-            {{ registration_no }}
-        </p>
-        <p class="erp-profile-detail">
-            <strong>Semester</strong>
-            {{ semester }}
-        </p>
-        <p class="erp-profile-detail">
-            <strong>Course</strong>
-            {{ course }}
-        </p>
-        <p class="erp-profile-detail">
-            <strong>Section</strong>
-            {{ section }}
-        </p>
-    </div>
-
-    <ul class="erp-side-nav">
-        <li>
-            <a href="{% url 'student_dashboard' %}" class="active">
-                <span class="nav-icon"><i class="bi bi-speedometer2"></i></span>
-                Dashboard
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <span class="nav-icon"><i class="bi bi-person"></i></span>
-                Profile
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <span class="nav-icon"><i class="bi bi-journal-text"></i></span>
-                Syllabus
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <span class="nav-icon"><i class="bi bi-calendar3"></i></span>
-                Calendar
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <span class="nav-icon"><i class="bi bi-clock"></i></span>
-                Time Table
-            </a>
-        </li>
-        <li>
-            <a href="#">
-                <span class="nav-icon"><i class="bi bi-book"></i></span>
-                Library
-            </a>
-        </li>
-    </ul>
-</aside>
+{% include "partials/student_sidebar.html" %}
 {% endblock %}
 
 {% block dashboard_content %}
@@ -80,18 +20,18 @@
         <div class="erp-metric-value">{{ metrics.announcements }}</div>
         <div class="erp-metric-label">Announcements</div>
     </article>
-    <article class="erp-metric-card metric-attendance">
+    <a href="{% url 'student_attendance' %}" class="erp-metric-card metric-attendance" style="text-decoration:none;color:inherit;">
         <div class="erp-metric-value">{{ metrics.attendance }}</div>
         <div class="erp-metric-label">Attendance</div>
-    </article>
-    <article class="erp-metric-card metric-assessment">
+    </a>
+    <a href="{% url 'student_assignments' %}" class="erp-metric-card metric-assessment" style="text-decoration:none;color:inherit;">
         <div class="erp-metric-value">{{ metrics.assessment }}</div>
-        <div class="erp-metric-label">Assessment &amp; Assignments</div>
-    </article>
-    <article class="erp-metric-card metric-tasks">
+        <div class="erp-metric-label">Pending Reviews</div>
+    </a>
+    <a href="{% url 'student_assignments' %}" class="erp-metric-card metric-tasks" style="text-decoration:none;color:inherit;">
         <div class="erp-metric-value">{{ metrics.tasks }}</div>
-        <div class="erp-metric-label">Tasks</div>
-    </article>
+        <div class="erp-metric-label">Assignments</div>
+    </a>
     <article class="erp-metric-card metric-placement">
         <div class="erp-metric-value">{{ metrics.placement }}</div>
         <div class="erp-metric-label">Placement</div>
