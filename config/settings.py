@@ -53,6 +53,7 @@ AUTO_CREATE_DEMO_USERS = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -116,12 +117,6 @@ DATABASES = {
     }
 }
 
-# Temporary debug (remove later)
-print("MYSQLDATABASE =", os.environ.get('MYSQLDATABASE'))
-print("MYSQLUSER =", os.environ.get('MYSQLUSER'))
-print("MYSQLHOST =", os.environ.get('MYSQLHOST'))
-print("MYSQLPORT =", os.environ.get('MYSQLPORT'))
-
 # ==========================================================
 # PASSWORD VALIDATION
 # ==========================================================
@@ -164,6 +159,15 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # ==========================================================
 # MEDIA FILES
