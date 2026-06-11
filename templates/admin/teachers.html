@@ -1,0 +1,99 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Teacher Management{% endblock %}
+
+{% block sidebar %}
+{% include "admin/partials/sidebar.html" %}
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="adm-page-head">
+    <div>
+        <h2 class="tch-section-title" style="margin:0;">Teacher Management</h2>
+        <p class="adm-subtitle">Create, activate, and manage teacher accounts</p>
+    </div>
+    <a href="{% url 'admin_teacher_create' %}" class="adm-btn adm-btn-primary">
+        <i class="bi bi-person-plus"></i> Create Teacher
+    </a>
+</div>
+
+<section class="tch-panel adm-panel-spaced">
+    <div class="tch-panel-body">
+        <form method="get" class="adm-filter-bar">
+            {{ filter_form.q }}
+            {{ filter_form.status }}
+            <button type="submit" class="adm-btn adm-btn-secondary">Filter</button>
+            <a href="{% url 'admin_teachers' %}" class="adm-btn adm-btn-ghost">Reset</a>
+        </form>
+
+        <div class="adm-table-wrap">
+            <table class="adm-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Teacher Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Phone Number</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Created Date</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for teacher in teachers_page %}
+                    <tr>
+                        <td><strong>{{ teacher.user.display_name }}</strong></td>
+                        <td>{{ teacher.user.email }}</td>
+                        <td>{{ teacher.phone|default:"—" }}</td>
+                        <td>
+                            {% if teacher.user.is_active %}
+                            <span class="adm-status adm-status-active">Active</span>
+                            {% else %}
+                            <span class="adm-status adm-status-inactive">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td class="adm-muted">{{ teacher.user.date_joined|date:"M d, Y" }}</td>
+                        <td class="adm-actions-cell">
+                            <a href="{% url 'admin_teacher_detail' teacher.pk %}" class="adm-btn adm-btn-sm adm-btn-ghost">View</a>
+                            <a href="{% url 'admin_teacher_edit' teacher.pk %}" class="adm-btn adm-btn-sm adm-btn-secondary">Edit</a>
+                            <form method="post" action="{% url 'admin_teacher_toggle' teacher.pk %}" class="adm-inline-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                {% if teacher.user.is_active %}
+                                <button type="submit" class="adm-btn adm-btn-sm adm-btn-danger adm-confirm-btn"
+                                    data-confirm-title="Deactivate teacher?"
+                                    data-confirm-body="{{ teacher.user.display_name }} will lose access immediately.">
+                                    Deactivate
+                                </button>
+                                {% else %}
+                                <button type="submit" class="adm-btn adm-btn-sm adm-btn-primary adm-confirm-btn"
+                                    data-confirm-title="Activate teacher?"
+                                    data-confirm-body="{{ teacher.user.display_name }} will regain access.">
+                                    Activate
+                                </button>
+                                {% endif %}
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="adm-empty-cell">No teachers found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if teachers_page.has_other_pages %}
+        <nav class="adm-pagination" aria-label="Teacher list pagination">
+            {% if teachers_page.has_previous %}
+            <a href="?page={{ teachers_page.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">Previous</a>
+            {% endif %}
+            <span>Page {{ teachers_page.number }} of {{ teachers_page.paginator.num_pages }}</span>
+            {% if teachers_page.has_next %}
+            <a href="?page={{ teachers_page.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}">Next</a>
+            {% endif %}
+        </nav>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

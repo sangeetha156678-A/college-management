@@ -1,0 +1,71 @@
+<script>
+(function () {
+    var departmentSelect = document.getElementById('id_department');
+    var yearSelect = document.getElementById('id_year');
+    var semesterSelect = document.getElementById('id_semester');
+    var subjectsSelect = document.getElementById('id_subjects');
+
+    if (!departmentSelect || !yearSelect || !semesterSelect || !subjectsSelect) return;
+
+    function clearHiddenSelection(select) {
+        if (!select) return;
+        var selected = select.options[select.selectedIndex];
+        if (selected && selected.hidden) {
+            select.value = '';
+        }
+        if (select.multiple) {
+            Array.from(select.options).forEach(function (opt) {
+                if (opt.selected && opt.hidden) {
+                    opt.selected = false;
+                }
+            });
+        }
+    }
+
+    function filterYears() {
+        var deptId = departmentSelect.value;
+        Array.from(yearSelect.options).forEach(function (opt) {
+            if (!opt.value) return;
+            var optDept = opt.getAttribute('data-department-id');
+            opt.hidden = deptId && optDept !== deptId;
+        });
+        clearHiddenSelection(yearSelect);
+        filterSemesters();
+    }
+
+    function filterSemesters() {
+        var yearId = yearSelect.value;
+        Array.from(semesterSelect.options).forEach(function (opt) {
+            if (!opt.value) return;
+            var optYear = opt.getAttribute('data-year-id');
+            opt.hidden = yearId && optYear !== yearId;
+        });
+        clearHiddenSelection(semesterSelect);
+        filterSubjects();
+    }
+
+    function filterSubjects() {
+        var deptId = departmentSelect.value;
+        var yearId = yearSelect.value;
+        var semId = semesterSelect.value;
+        var ready = deptId && yearId && semId;
+        Array.from(subjectsSelect.options).forEach(function (opt) {
+            if (!opt.value) return;
+            var hidden = !ready;
+            if (!hidden && opt.getAttribute('data-department-id') !== deptId) hidden = true;
+            if (!hidden && opt.getAttribute('data-year-id') !== yearId) hidden = true;
+            if (!hidden && opt.getAttribute('data-semester-id') !== semId) hidden = true;
+            opt.hidden = hidden;
+        });
+        clearHiddenSelection(subjectsSelect);
+    }
+
+    departmentSelect.addEventListener('change', function () {
+        filterYears();
+    });
+    yearSelect.addEventListener('change', filterSemesters);
+    semesterSelect.addEventListener('change', filterSubjects);
+
+    filterYears();
+})();
+</script>

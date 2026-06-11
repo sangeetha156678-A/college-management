@@ -168,6 +168,36 @@ a:hover {
   color: var(--text-dark);
 }
 
+.portal-logout-form {
+  margin: 0;
+}
+
+.portal-logout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.portal-logout-btn:hover {
+  background: #fee2e2;
+  border-color: #f87171;
+  transform: translateY(-1px);
+}
+
+.portal-logout-btn i {
+  font-size: 1rem;
+}
+
 .tch-menu-toggle {
   display: none;
   width: 42px;

@@ -1,0 +1,95 @@
+{% extends "admin_base.html" %}
+
+{% block title %}{{ teacher.user.display_name }}{% endblock %}
+
+{% block sidebar %}
+{% include "admin/partials/sidebar.html" %}
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="adm-page-head">
+    <div>
+        <h2 class="tch-section-title" style="margin:0;">{{ teacher.user.display_name }}</h2>
+        <p class="adm-subtitle">Teacher account details</p>
+    </div>
+    <div class="adm-page-head-actions">
+        <a href="{% url 'admin_teacher_edit' teacher.pk %}" class="adm-btn adm-btn-secondary">
+            <i class="bi bi-pencil"></i> Edit
+        </a>
+        <a href="{% url 'admin_teachers' %}" class="adm-btn adm-btn-ghost">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+    </div>
+</div>
+
+<section class="tch-panel adm-panel-spaced">
+    <div class="tch-panel-body">
+        <dl class="adm-detail-grid">
+            <div>
+                <dt>Full name</dt>
+                <dd>{{ teacher.user.display_name }}</dd>
+            </div>
+            <div>
+                <dt>Username</dt>
+                <dd><code>{{ teacher.user.username }}</code></dd>
+            </div>
+            <div>
+                <dt>Email</dt>
+                <dd>{{ teacher.user.email }}</dd>
+            </div>
+            <div>
+                <dt>Phone</dt>
+                <dd>{{ teacher.phone|default:"—" }}</dd>
+            </div>
+            <div>
+                <dt>Department</dt>
+                <dd>{% if teacher.department %}{{ teacher.department.name }}{% else %}—{% endif %}</dd>
+            </div>
+            <div>
+                <dt>Status</dt>
+                <dd>
+                    {% if teacher.user.is_active %}
+                    <span class="adm-status adm-status-active">Active</span>
+                    {% else %}
+                    <span class="adm-status adm-status-inactive">Inactive</span>
+                    {% endif %}
+                </dd>
+            </div>
+            <div>
+                <dt>Created</dt>
+                <dd>{{ teacher.user.date_joined|date:"F d, Y" }}</dd>
+            </div>
+            <div class="adm-field-full">
+                <dt>Assigned subjects</dt>
+                <dd>
+                    {% for assignment in teacher.subject_assignments.all %}
+                    <span class="tch-badge info">{{ assignment.subject.name }}</span>
+                    {% empty %}
+                    —
+                    {% endfor %}
+                </dd>
+            </div>
+        </dl>
+
+        <div class="adm-form-actions" style="margin-top:1.5rem;">
+            <form method="post" action="{% url 'admin_teacher_toggle' teacher.pk %}" class="adm-inline-form">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{% url 'admin_teacher_detail' teacher.pk %}">
+                {% if teacher.user.is_active %}
+                <button type="submit" class="adm-btn adm-btn-danger adm-confirm-btn"
+                    data-confirm-title="Deactivate teacher?"
+                    data-confirm-body="{{ teacher.user.display_name }} will lose access immediately.">
+                    Deactivate Account
+                </button>
+                {% else %}
+                <button type="submit" class="adm-btn adm-btn-primary adm-confirm-btn"
+                    data-confirm-title="Activate teacher?"
+                    data-confirm-body="{{ teacher.user.display_name }} will regain access.">
+                    Activate Account
+                </button>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

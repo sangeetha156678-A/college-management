@@ -2,9 +2,14 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.utils import timezone
 
+from django.contrib.auth import get_user_model
+
 from accounts.demo_users import DEMO_USERS, ensure_demo_users_if_needed
+
+User = get_user_model()
 
 # Maps login tab -> database role -> redirect URL name
 LOGIN_ROLE_MAP = {
@@ -75,23 +80,30 @@ def user_login(request):
         user = authenticate(request, username=username, password=password)
 
         if user is None:
+            inactive_user = User.objects.filter(username=username).first()
+            if (
+                inactive_user
+                and not inactive_user.is_active
+                and inactive_user.check_password(password)
+            ):
+                return render(
+                    request,
+                    'login.html',
+                    _login_context(
+                        active_role,
+                        error=(
+                            'Your account has been deactivated.\n'
+                            'Please contact administration.'
+                        ),
+                        username=username,
+                    ),
+                )
             return render(
                 request,
                 'login.html',
                 _login_context(
                     active_role,
                     error='Invalid credentials',
-                    username=username,
-                ),
-            )
-
-        if not user.is_active:
-            return render(
-                request,
-                'login.html',
-                _login_context(
-                    active_role,
-                    error='This account has been deactivated.',
                     username=username,
                 ),
             )
@@ -114,6 +126,7 @@ def user_login(request):
     return render(request, 'login.html', _login_context(active_role))
 
 
+@require_POST
 def user_logout(request):
     logout(request)
     return redirect('login')

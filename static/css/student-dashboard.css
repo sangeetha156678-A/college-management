@@ -141,6 +141,35 @@ a:hover {
   color: var(--white);
 }
 
+.portal-logout-form {
+  margin: 0;
+}
+
+.portal-logout-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--white);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.portal-logout-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.55);
+}
+
+.portal-logout-btn i {
+  font-size: 1rem;
+}
+
 /* ===== SUB NAV ===== */
 .erp-subnav {
   background: var(--grey-subnav);

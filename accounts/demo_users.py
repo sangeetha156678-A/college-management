@@ -5,6 +5,7 @@ Demo user definitions and auto-provisioning for local development.
 from django.contrib.auth import get_user_model
 from django.db.utils import OperationalError, ProgrammingError
 
+from academics.models import Department, Semester, Year
 from accounts.models import Student, Teacher
 
 DEMO_USERS = [
@@ -35,6 +36,16 @@ DEMO_USERS = [
 ]
 
 
+def _get_bca_defaults():
+    department = Department.objects.filter(code='BCA').first()
+    if not department:
+        return None, None, None
+
+    year = Year.objects.filter(department=department, number=1).first()
+    semester = Semester.objects.filter(year=year, number=2).first() if year else None
+    return department, year, semester
+
+
 def ensure_demo_users():
     """Create or update demo users. Safe to call multiple times."""
     User = get_user_model()
@@ -43,6 +54,8 @@ def ensure_demo_users():
         User.objects.exists()
     except (OperationalError, ProgrammingError):
         return
+
+    department, year, semester = _get_bca_defaults()
 
     for data in DEMO_USERS:
         username = data['username']
@@ -65,16 +78,20 @@ def ensure_demo_users():
         user.set_password(data['password'])
         user.save()
 
-        if data['role'] == 'teacher':
-            Teacher.objects.get_or_create(
+        if data['role'] == 'teacher' and department:
+            teacher, _ = Teacher.objects.get_or_create(user=user)
+            if teacher.department_id != department.pk:
+                teacher.department = department
+                teacher.save(update_fields=['department'])
+        elif data['role'] == 'student' and year and semester:
+            student, _ = Student.objects.get_or_create(
                 user=user,
-                defaults={'subject': 'Computer Science', 'department': 'BCA'},
+                defaults={'year': year, 'semester': semester},
             )
-        elif data['role'] == 'student':
-            Student.objects.get_or_create(
-                user=user,
-                defaults={'course': 'BCA (AI & ML)', 'semester': 'Sem II'},
-            )
+            if not student.year_id or not student.semester_id:
+                student.year = year
+                student.semester = semester
+                student.save(update_fields=['year', 'semester'])
 
 
 _demo_users_ensured = False

@@ -31,7 +31,7 @@
             <div class="tch-list-item adm-list-actions">
                 <div>
                     <strong>{{ teacher.user.display_name }}</strong>
-                    <span class="adm-muted"> · {{ teacher.subject|default:"—" }}</span>
+                    <span class="adm-muted"> · {% if teacher.department %}{{ teacher.department.name }}{% else %}—{% endif %}</span>
                 </div>
                 <div class="adm-action-group">
                     {% if all_classes %}
@@ -70,7 +70,7 @@
                 <label class="adm-field-label">Add teachers</label>
                 <select name="teacher_ids" class="adm-input adm-multiselect" multiple size="4">
                     {% for teacher in available_teachers %}
-                    <option value="{{ teacher.pk }}">{{ teacher.user.display_name }} — {{ teacher.subject|default:"—" }}</option>
+                    <option value="{{ teacher.pk }}">{{ teacher.user.display_name }} — {% if teacher.department %}{{ teacher.department.name }}{% else %}—{% endif %}</option>
                     {% endfor %}
                 </select>
                 <button type="submit" class="adm-btn adm-btn-primary adm-btn-sm">Assign Selected</button>
@@ -88,7 +88,7 @@
             <div class="tch-list-item adm-list-actions">
                 <div>
                     <strong>{{ student.user.display_name }}</strong>
-                    <span class="adm-muted"> · {{ student.course|default:"—" }}</span>
+                    <span class="adm-muted"> · {% if student.year %}{{ student.year.department.code }} · {{ student.year }} · {{ student.semester }}{% else %}—{% endif %}</span>
                 </div>
                 <form method="post" action="{% url 'admin_class_remove_student' college_class.pk student.pk %}" class="adm-inline-form">
                     {% csrf_token %}
@@ -109,7 +109,7 @@
                 <label class="adm-field-label">Enroll students</label>
                 <select name="student_ids" class="adm-input adm-multiselect" multiple size="4">
                     {% for student in available_students %}
-                    <option value="{{ student.pk }}">{{ student.user.display_name }} — {{ student.course|default:"—" }}</option>
+                    <option value="{{ student.pk }}">{{ student.user.display_name }} — {% if student.year %}{{ student.year.department.code }} · {{ student.year }} · {{ student.semester }}{% else %}—{% endif %}</option>
                     {% endfor %}
                 </select>
                 <button type="submit" class="adm-btn adm-btn-primary adm-btn-sm">Enroll Selected</button>

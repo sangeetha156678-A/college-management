@@ -16,7 +16,7 @@
             </div>
             <div class="tch-stat-count">{{ stats.teachers }}</div>
             <div class="tch-stat-label">Teachers</div>
-            <a href="{% url 'admin_users' %}?role=teacher" class="tch-stat-btn">Manage</a>
+            <a href="{% url 'admin_teachers' %}" class="tch-stat-btn">Manage</a>
         </article>
         <article class="tch-stat-card purple">
             <div class="tch-stat-top">
@@ -24,7 +24,7 @@
             </div>
             <div class="tch-stat-count">{{ stats.students }}</div>
             <div class="tch-stat-label">Students</div>
-            <a href="{% url 'admin_users' %}?role=student" class="tch-stat-btn">Manage</a>
+            <span class="tch-stat-btn" style="opacity:.6;cursor:default;">Coming soon</span>
         </article>
         <article class="tch-stat-card green">
             <div class="tch-stat-top">
@@ -40,7 +40,7 @@
             </div>
             <div class="tch-stat-count">{{ stats.active_accounts }}</div>
             <div class="tch-stat-label">Active Accounts</div>
-            <a href="{% url 'admin_users' %}?status=active" class="tch-stat-btn">View</a>
+            <a href="{% url 'admin_teachers' %}?status=active" class="tch-stat-btn">View</a>
         </article>
         <article class="tch-stat-card pink">
             <div class="tch-stat-top">
@@ -48,7 +48,7 @@
             </div>
             <div class="tch-stat-count">{{ stats.inactive_accounts }}</div>
             <div class="tch-stat-label">Inactive Accounts</div>
-            <a href="{% url 'admin_users' %}?status=inactive" class="tch-stat-btn">View</a>
+            <a href="{% url 'admin_teachers' %}?status=inactive" class="tch-stat-btn">View</a>
         </article>
     </div>
 </section>
@@ -56,11 +56,11 @@
 <section aria-labelledby="actions-heading">
     <h2 class="tch-section-title" id="actions-heading">Quick Actions</h2>
     <div class="tch-actions">
-        <a href="{% url 'admin_user_create' %}" class="tch-action-card">
+        <a href="{% url 'admin_teacher_create' %}" class="tch-action-card">
             <div class="tch-action-icon"><i class="bi bi-person-plus"></i></div>
             <div>
-                <h3>Create Account</h3>
-                <p>Add a new teacher or student</p>
+                <h3>Create Teacher</h3>
+                <p>Add a new teacher account</p>
             </div>
         </a>
         <a href="{% url 'admin_class_create' %}" class="tch-action-card">

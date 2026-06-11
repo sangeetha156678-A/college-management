@@ -18,7 +18,13 @@ from django.views.decorators.http import require_POST
 
 from accounts.decorators import admin_required
 
-from accounts.forms import CollegeClassForm, ComposeMessageForm, CreateUserForm, UserFilterForm
+from accounts.forms import (
+    CollegeClassForm,
+    ComposeMessageForm,
+    CreateTeacherForm,
+    EditTeacherForm,
+    TeacherFilterForm,
+)
 
 from accounts.models import (
 
@@ -42,7 +48,11 @@ from accounts.models import (
 
 from accounts.services.email_service import send_admin_message_email
 
-from accounts.services.user_service import create_user_account, log_user_status_change
+from accounts.services.user_service import (
+    create_teacher_account,
+    log_user_status_change,
+    update_teacher_profile,
+)
 
 
 
@@ -201,232 +211,140 @@ def admin_dashboard(request):
 
 
 @login_required(login_url='/accounts/login/')
-
 @admin_required
+def admin_teachers(request):
+    ctx = _admin_context(request, 'teachers')
+    filter_form = TeacherFilterForm(request.GET or None)
 
-def admin_users(request):
-
-    ctx = _admin_context(request, 'users')
-
-    filter_form = UserFilterForm(request.GET or None)
-
-
-
-    users = User.objects.filter(role__in=['teacher', 'student']).select_related(
-
-        'teacher_profile',
-
-        'student_profile',
-
-    ).order_by('-date_joined')
-
-
+    teachers = Teacher.objects.select_related(
+        'user',
+        'department',
+    ).order_by('-user__date_joined')
 
     if filter_form.is_valid():
-
         q = filter_form.cleaned_data.get('q', '').strip()
-
-        role = filter_form.cleaned_data.get('role')
-
         status = filter_form.cleaned_data.get('status')
 
-
-
         if q:
-
-            users = users.filter(
-
-                Q(first_name__icontains=q)
-
-                | Q(last_name__icontains=q)
-
-                | Q(email__icontains=q)
-
-                | Q(username__icontains=q)
-
+            teachers = teachers.filter(
+                Q(user__first_name__icontains=q)
+                | Q(user__last_name__icontains=q)
+                | Q(user__email__icontains=q)
+                | Q(user__username__icontains=q)
+                | Q(phone__icontains=q)
             )
-
-        if role:
-
-            users = users.filter(role=role)
-
         if status == 'active':
-
-            users = users.filter(is_active=True)
-
+            teachers = teachers.filter(user__is_active=True)
         elif status == 'inactive':
+            teachers = teachers.filter(user__is_active=False)
 
-            users = users.filter(is_active=False)
-
-
-
-    paginator = Paginator(users, 15)
-
+    paginator = Paginator(teachers, 15)
     page = paginator.get_page(request.GET.get('page'))
 
-
-
     ctx.update({
-
         'filter_form': filter_form,
-
-        'users_page': page,
-
+        'teachers_page': page,
     })
-
-    return render(request, 'admin/users.html', ctx)
-
-
-
+    return render(request, 'admin/teachers.html', ctx)
 
 
 @login_required(login_url='/accounts/login/')
-
 @admin_required
-
-def admin_user_create(request):
-
-    ctx = _admin_context(request, 'users')
-
-
+def admin_teacher_create(request):
+    ctx = _admin_context(request, 'teachers')
 
     if request.method == 'POST':
-
-        form = CreateUserForm(request.POST)
-
+        form = CreateTeacherForm(request.POST)
         if form.is_valid():
-
             try:
-
-                user, _temp = create_user_account(
-
+                user, temp_password = create_teacher_account(
                     first_name=form.cleaned_data['first_name'],
-
                     last_name=form.cleaned_data['last_name'],
-
                     email=form.cleaned_data['email'],
-
-                    role=form.cleaned_data['role'],
-
-                    subject=form.cleaned_data.get('subject', ''),
-
-                    department=form.cleaned_data.get('department', ''),
-
-                    course=form.cleaned_data.get('course', ''),
-
-                    semester=form.cleaned_data.get('semester', ''),
-
+                    phone=form.cleaned_data['phone'],
+                    department=form.cleaned_data['department'],
+                    subjects=list(form.cleaned_data.get('subjects') or []),
                     performed_by=request.user,
-
                 )
-
                 messages.success(
-
                     request,
-
-                    f'Account created for {user.display_name}. Welcome email sent to {user.email}.',
-
+                    (
+                        f'Teacher account created for {user.display_name}. '
+                        f'Username: {user.username}. Welcome email sent to {user.email}.'
+                    ),
                 )
-
-                return redirect('admin_users')
-
+                return redirect('admin_teachers')
             except ValueError as exc:
-
                 messages.error(request, str(exc))
-
     else:
-
-        form = CreateUserForm()
-
-
+        form = CreateTeacherForm()
 
     ctx['form'] = form
-
-    return render(request, 'admin/user_form.html', ctx)
-
-
-
+    return render(request, 'admin/teacher_form.html', ctx)
 
 
 @login_required(login_url='/accounts/login/')
-
 @admin_required
+def admin_teacher_detail(request, teacher_id):
+    ctx = _admin_context(request, 'teachers')
+    teacher = get_object_or_404(
+        Teacher.objects.select_related('user', 'department').prefetch_related(
+            'subject_assignments__subject__semester',
+            'subject_assignments__subject__department',
+        ),
+        pk=teacher_id,
+    )
+    ctx['teacher'] = teacher
+    return render(request, 'admin/teacher_detail.html', ctx)
 
+
+@login_required(login_url='/accounts/login/')
+@admin_required
+def admin_teacher_edit(request, teacher_id):
+    ctx = _admin_context(request, 'teachers')
+    teacher = get_object_or_404(
+        Teacher.objects.select_related('user', 'department'),
+        pk=teacher_id,
+    )
+
+    if request.method == 'POST':
+        form = EditTeacherForm(request.POST, teacher=teacher)
+        if form.is_valid():
+            try:
+                update_teacher_profile(
+                    teacher,
+                    first_name=form.cleaned_data['first_name'],
+                    last_name=form.cleaned_data['last_name'],
+                    email=form.cleaned_data['email'],
+                    phone=form.cleaned_data.get('phone', ''),
+                    department=form.cleaned_data['department'],
+                    subjects=list(form.cleaned_data.get('subjects') or []),
+                    performed_by=request.user,
+                )
+                messages.success(request, f'Teacher profile updated for {teacher.user.display_name}.')
+                return redirect('admin_teacher_detail', teacher_id=teacher.pk)
+            except ValueError as exc:
+                messages.error(request, str(exc))
+    else:
+        form = EditTeacherForm(teacher=teacher)
+
+    ctx.update({'form': form, 'teacher': teacher})
+    return render(request, 'admin/teacher_edit.html', ctx)
+
+
+@login_required(login_url='/accounts/login/')
+@admin_required
 @require_POST
-
-def admin_user_toggle(request, user_id):
-
-    user = get_object_or_404(User, pk=user_id, role__in=['teacher', 'student'])
-
+def admin_teacher_toggle(request, teacher_id):
+    teacher = get_object_or_404(Teacher, pk=teacher_id, user__role='teacher')
+    user = teacher.user
     user.is_active = not user.is_active
-
     user.save(update_fields=['is_active'])
-
     log_user_status_change(user, user.is_active, request.user)
 
-
-
     status = 'activated' if user.is_active else 'deactivated'
-
     messages.success(request, f'{user.display_name} has been {status}.')
-
-    return redirect(request.POST.get('next') or 'admin_users')
-
-
-
-
-
-@login_required(login_url='/accounts/login/')
-
-@admin_required
-
-@require_POST
-
-def admin_users_bulk(request):
-
-    action = request.POST.get('action')
-
-    user_ids = request.POST.getlist('user_ids')
-
-
-
-    if not user_ids:
-
-        messages.warning(request, 'No users selected.')
-
-        return redirect('admin_users')
-
-
-
-    users = User.objects.filter(pk__in=user_ids, role__in=['teacher', 'student'])
-
-    if action == 'activate':
-
-        users.update(is_active=True)
-
-        for user in users:
-
-            log_user_status_change(user, True, request.user)
-
-        messages.success(request, f'{users.count()} account(s) activated.')
-
-    elif action == 'deactivate':
-
-        users.update(is_active=False)
-
-        for user in users:
-
-            log_user_status_change(user, False, request.user)
-
-        messages.success(request, f'{users.count()} account(s) deactivated.')
-
-    else:
-
-        messages.error(request, 'Invalid bulk action.')
-
-
-
-    return redirect('admin_users')
+    return redirect(request.POST.get('next') or 'admin_teachers')
 
 
 

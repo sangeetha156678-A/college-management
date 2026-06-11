@@ -25,9 +25,7 @@
                     <div class="sub">{% block header_sub_label %}{{ student_display_name|default:"Portal User" }}{% endblock %}</div>
                 </div>
             </div>
-            <a href="{% url 'logout' %}" class="erp-settings-btn" title="Settings / Logout" aria-label="Settings">
-                <i class="bi bi-gear-fill"></i>
-            </a>
+            {% include "partials/logout_button.html" %}
         </div>
     </header>
 

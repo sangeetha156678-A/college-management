@@ -1,0 +1,80 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Edit {{ teacher.user.display_name }}{% endblock %}
+
+{% block sidebar %}
+{% include "admin/partials/sidebar.html" %}
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="adm-page-head">
+    <div>
+        <h2 class="tch-section-title" style="margin:0;">Edit Teacher</h2>
+        <p class="adm-subtitle">Update profile for {{ teacher.user.display_name }}</p>
+    </div>
+    <a href="{% url 'admin_teacher_detail' teacher.pk %}" class="adm-btn adm-btn-ghost">
+        <i class="bi bi-arrow-left"></i> Back to profile
+    </a>
+</div>
+
+<section class="tch-panel adm-panel-spaced adm-form-panel">
+    <div class="tch-panel-body">
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="adm-form-grid">
+                <div class="adm-field">
+                    <label for="id_first_name">First name</label>
+                    {{ form.first_name }}
+                    {% if form.first_name.errors %}<span class="adm-field-error">{{ form.first_name.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="adm-field">
+                    <label for="id_last_name">Last name</label>
+                    {{ form.last_name }}
+                    {% if form.last_name.errors %}<span class="adm-field-error">{{ form.last_name.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="adm-field adm-field-full">
+                    <label for="id_email">Email address</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}<span class="adm-field-error">{{ form.email.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="adm-field adm-field-full">
+                    <label for="id_phone">Phone number</label>
+                    {{ form.phone }}
+                    {% if form.phone.errors %}<span class="adm-field-error">{{ form.phone.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="adm-field adm-field-full">
+                    <label for="id_department">Department</label>
+                    {{ form.department }}
+                    {% if form.department.errors %}<span class="adm-field-error">{{ form.department.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="adm-field">
+                    <label for="id_year">Year</label>
+                    {{ form.year }}
+                    {% if form.year.errors %}<span class="adm-field-error">{{ form.year.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="adm-field">
+                    <label for="id_semester">Semester</label>
+                    {{ form.semester }}
+                    {% if form.semester.errors %}<span class="adm-field-error">{{ form.semester.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="adm-field adm-field-full">
+                    <label for="id_subjects">Subjects (optional)</label>
+                    {{ form.subjects }}
+                    <p class="adm-subtitle">Select department, year, and semester first. A teacher may be assigned at most one subject per semester.</p>
+                    {% if form.subjects.errors %}<span class="adm-field-error">{{ form.subjects.errors.0 }}</span>{% endif %}
+                </div>
+            </div>
+
+            <div class="adm-form-actions">
+                <button type="submit" class="adm-btn adm-btn-primary">
+                    <i class="bi bi-check-lg"></i> Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{% include "admin/partials/teacher_academic_filter_script.html" %}
+{% endblock %}

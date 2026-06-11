@@ -31,10 +31,11 @@
                 <i class="bi bi-bell"></i>
                 <span class="dot" aria-hidden="true"></span>
             </button>
-            <a href="{% url 'logout' %}" class="tch-profile" title="Profile / Logout">
+            <div class="tch-profile" title="Profile">
                 <img src="{% static 'img/default-avatar.svg' %}" alt="">
                 <span>{{ teacher_short_name }}</span>
-            </a>
+            </div>
+            {% include "partials/logout_button.html" %}
         </div>
     </header>
 
