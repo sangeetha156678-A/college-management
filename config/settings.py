@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import dj_database_url
 
 # Build paths inside the project
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -92,21 +93,25 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # }
 
 # Railway MySQL Database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('MYSQLDATABASE'),
-        'USER': os.environ.get('MYSQLUSER'),
-        'PASSWORD': os.environ.get('MYSQLPASSWORD'),
-        'HOST': os.environ.get('MYSQLHOST'),
-        'PORT': os.environ.get('MYSQLPORT'),
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-        },
-    }
-}
-
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.mysql',
+#        'NAME': os.getenv('MYSQLDATABASE', 'railway'),
+#        'USER': os.getenv('MYSQLUSER', 'root'),
+#        'PASSWORD': os.getenv('MYSQLPASSWORD', ''),
+#        'HOST': os.getenv('MYSQLHOST', ''),
+#        'PORT': os.getenv('MYSQLPORT', '3306'),
+#        'OPTIONS': {
+#            'charset': 'utf8mb4',
+#        },}
+#}
 # Password Validation
+
+DATABASES = dj_database_url.config(
+    default=os.environ.get('DATABASE_URL')
+)
+
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
