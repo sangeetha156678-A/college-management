@@ -1,0 +1,64 @@
+{% extends "teacher_base.html" %}
+{% load static %}
+
+{% block title %}My Students{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/admin-dashboard.css' %}">
+{% endblock %}
+
+{% block sidebar %}
+<aside class="tch-sidebar" id="tch-sidebar">
+    <p class="tch-side-label">Faculty Menu</p>
+    <ul class="tch-side-nav">
+        <li><a href="{% url 'teacher_dashboard' %}"><i class="bi bi-grid-1x2"></i> Dashboard</a></li>
+        <li><a href="{% url 'teacher_students' %}" class="active"><i class="bi bi-people"></i> Students</a></li>
+    </ul>
+</aside>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="adm-page-head">
+    <div>
+        <h2 class="tch-section-title" style="margin:0;">My Students</h2>
+        <p class="adm-subtitle">Active students in your assigned department and semester subjects</p>
+    </div>
+</div>
+
+<section class="tch-panel adm-panel-spaced">
+    <div class="tch-panel-body">
+        <div class="adm-table-wrap">
+            <table class="adm-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Student Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Department</th>
+                        <th scope="col">Year</th>
+                        <th scope="col">Semester</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td><strong>{{ student.user.display_name }}</strong></td>
+                        <td>{{ student.user.email }}</td>
+                        <td><code>{{ student.user.username }}</code></td>
+                        <td>{{ student.year.department.code }}</td>
+                        <td>Year {{ student.year.number }}</td>
+                        <td>Semester {{ student.semester.number }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="adm-empty-cell">
+                            No students found for your assigned subjects yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

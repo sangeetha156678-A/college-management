@@ -81,7 +81,10 @@ def create_teacher_account(
             description=f'Created teacher account for {user.display_name} ({email})',
         )
 
-    send_teacher_welcome_email(user, temp_password)
+    try:
+        send_teacher_welcome_email(user, temp_password)
+    except Exception:
+        pass
     return user, temp_password
 
 
@@ -178,7 +181,10 @@ def create_user_account(
             description=f'Created {role} account for {user.display_name} ({email})',
         )
 
-    send_welcome_email(user, temp_password)
+    try:
+        send_welcome_email(user, temp_password)
+    except Exception:
+        pass
     return user, temp_password
 
 

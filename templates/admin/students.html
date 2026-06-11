@@ -1,0 +1,148 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Student Management{% endblock %}
+
+{% block sidebar %}
+{% include "admin/partials/sidebar.html" %}
+{% endblock %}
+
+{% block dashboard_content %}
+{% include "admin/partials/student_credentials_banner.html" %}
+
+{% if import_summary %}
+<section class="tch-panel adm-panel-spaced">
+    <div class="tch-panel-body">
+        <h3 class="tch-section-title" style="margin:0 0 0.75rem;font-size:1rem;">Import summary</h3>
+        <p class="adm-subtitle">
+            {{ import_summary.created }} created · {{ import_summary.skipped }} skipped
+        </p>
+        {% if import_summary.errors %}
+        <ul class="adm-import-errors">
+            {% for error in import_summary.errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+</section>
+{% endif %}
+
+<div class="adm-page-head">
+    <div>
+        <h2 class="tch-section-title" style="margin:0;">Student Management</h2>
+        <p class="adm-subtitle">Create, import, activate, and manage student accounts</p>
+    </div>
+    <div class="adm-page-head-actions">
+        <a href="{% url 'admin_student_import' %}" class="adm-btn adm-btn-secondary">
+            <i class="bi bi-upload"></i> Bulk Import
+        </a>
+        <a href="{% url 'admin_student_create' %}" class="adm-btn adm-btn-primary">
+            <i class="bi bi-person-plus"></i> Create Student
+        </a>
+    </div>
+</div>
+
+<section class="tch-panel adm-panel-spaced">
+    <div class="tch-panel-body">
+        <form method="get" class="adm-filter-bar adm-filter-bar-wide">
+            {{ filter_form.q }}
+            {{ filter_form.department }}
+            {{ filter_form.year }}
+            {{ filter_form.semester }}
+            {{ filter_form.status }}
+            <button type="submit" class="adm-btn adm-btn-secondary">Filter</button>
+            <a href="{% url 'admin_students' %}" class="adm-btn adm-btn-ghost">Reset</a>
+        </form>
+
+        <div class="adm-table-wrap">
+            <table class="adm-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Student Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Department</th>
+                        <th scope="col">Year</th>
+                        <th scope="col">Semester</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students_page %}
+                    <tr>
+                        <td><strong>{{ student.user.display_name }}</strong></td>
+                        <td>{{ student.user.email }}</td>
+                        <td>{{ student.year.department.code }}</td>
+                        <td>Year {{ student.year.number }}</td>
+                        <td>Semester {{ student.semester.number }}</td>
+                        <td>
+                            {% if student.user.is_active %}
+                            <span class="adm-status adm-status-active">Active</span>
+                            {% else %}
+                            <span class="adm-status adm-status-inactive">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td class="adm-actions-cell">
+                            <a href="{% url 'admin_student_detail' student.pk %}" class="adm-btn adm-btn-sm adm-btn-ghost">View</a>
+                            <a href="{% url 'admin_student_edit' student.pk %}" class="adm-btn adm-btn-sm adm-btn-secondary">Edit</a>
+                            <form method="post" action="{% url 'admin_student_toggle' student.pk %}" class="adm-inline-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                {% if student.user.is_active %}
+                                <button type="submit" class="adm-btn adm-btn-sm adm-btn-danger adm-confirm-btn"
+                                    data-confirm-title="Deactivate student?"
+                                    data-confirm-body="{{ student.user.display_name }} will lose access immediately.">
+                                    Deactivate
+                                </button>
+                                {% else %}
+                                <button type="submit" class="adm-btn adm-btn-sm adm-btn-primary adm-confirm-btn"
+                                    data-confirm-title="Activate student?"
+                                    data-confirm-body="{{ student.user.display_name }} will regain access.">
+                                    Activate
+                                </button>
+                                {% endif %}
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="adm-empty-cell">No students found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if students_page.has_other_pages %}
+        <nav class="adm-pagination" aria-label="Student list pagination">
+            {% if students_page.has_previous %}
+            <a href="?page={{ students_page.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.year %}&year={{ request.GET.year }}{% endif %}{% if request.GET.semester %}&semester={{ request.GET.semester }}{% endif %}">Previous</a>
+            {% endif %}
+            <span>Page {{ students_page.number }} of {{ students_page.paginator.num_pages }}</span>
+            {% if students_page.has_next %}
+            <a href="?page={{ students_page.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.year %}&year={{ request.GET.year }}{% endif %}{% if request.GET.semester %}&semester={{ request.GET.semester }}{% endif %}">Next</a>
+            {% endif %}
+        </nav>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{% include "admin/partials/student_academic_filter_script.html" %}
+{% if new_student_credentials %}
+<script>
+document.querySelectorAll('.adm-copy-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+        var el = document.getElementById(btn.getAttribute('data-copy-target'));
+        if (!el) return;
+        navigator.clipboard.writeText(el.textContent.trim()).then(function () {
+            var icon = btn.querySelector('i');
+            icon.className = 'bi bi-check2';
+            setTimeout(function () { icon.className = 'bi bi-clipboard'; }, 1500);
+        });
+    });
+});
+</script>
+{% endif %}
+{% endblock %}

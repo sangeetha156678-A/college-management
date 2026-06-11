@@ -11,7 +11,7 @@
         <li><a href="#"><i class="bi bi-calendar-check"></i> Attendance</a></li>
         <li><a href="#"><i class="bi bi-file-earmark-text"></i> Notes</a></li>
         <li><a href="#"><i class="bi bi-clipboard-check"></i> Assignments</a></li>
-        <li><a href="#"><i class="bi bi-people"></i> Students</a></li>
+        <li><a href="{% url 'teacher_students' %}"><i class="bi bi-people"></i> Students</a></li>
         <li><a href="#"><i class="bi bi-calendar3"></i> Calendar</a></li>
         <li><a href="#"><i class="bi bi-chat-dots"></i> Messages</a></li>
         <li><a href="#"><i class="bi bi-bar-chart"></i> Reports</a></li>
@@ -38,7 +38,7 @@
             </div>
             <div class="tch-stat-count">{{ stats.students }}</div>
             <div class="tch-stat-label">Students</div>
-            <a href="#" class="tch-stat-btn">Manage</a>
+            <a href="{% url 'teacher_students' %}" class="tch-stat-btn">Manage</a>
         </article>
         <article class="tch-stat-card green">
             <div class="tch-stat-top">

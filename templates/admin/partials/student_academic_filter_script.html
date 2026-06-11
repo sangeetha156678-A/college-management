@@ -1,0 +1,43 @@
+<script>
+(function () {
+    var departmentSelect = document.getElementById('id_department');
+    var yearSelect = document.getElementById('id_year');
+    var semesterSelect = document.getElementById('id_semester');
+
+    if (!departmentSelect || !yearSelect || !semesterSelect) return;
+
+    function clearHiddenSelection(select) {
+        if (!select) return;
+        var selected = select.options[select.selectedIndex];
+        if (selected && selected.hidden) {
+            select.value = '';
+        }
+    }
+
+    function filterYears() {
+        var deptId = departmentSelect.value;
+        Array.from(yearSelect.options).forEach(function (opt) {
+            if (!opt.value) return;
+            var optDept = opt.getAttribute('data-department-id');
+            opt.hidden = deptId && optDept !== deptId;
+        });
+        clearHiddenSelection(yearSelect);
+        filterSemesters();
+    }
+
+    function filterSemesters() {
+        var yearId = yearSelect.value;
+        Array.from(semesterSelect.options).forEach(function (opt) {
+            if (!opt.value) return;
+            var optYear = opt.getAttribute('data-year-id');
+            opt.hidden = yearId && optYear !== yearId;
+        });
+        clearHiddenSelection(semesterSelect);
+    }
+
+    departmentSelect.addEventListener('change', filterYears);
+    yearSelect.addEventListener('change', filterSemesters);
+
+    filterYears();
+})();
+</script>

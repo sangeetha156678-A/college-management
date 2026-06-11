@@ -1,0 +1,66 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Bulk Import Students{% endblock %}
+
+{% block sidebar %}
+{% include "admin/partials/sidebar.html" %}
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="adm-page-head">
+    <div>
+        <h2 class="tch-section-title" style="margin:0;">Bulk Import Students</h2>
+        <p class="adm-subtitle">Upload an Excel file to create students for a department, year, and semester</p>
+    </div>
+    <a href="{% url 'admin_students' %}" class="adm-btn adm-btn-ghost">
+        <i class="bi bi-arrow-left"></i> Back to students
+    </a>
+</div>
+
+<section class="tch-panel adm-panel-spaced adm-form-panel">
+    <div class="tch-panel-body">
+        <p class="adm-subtitle" style="margin-bottom:1rem;">
+            Download the
+            <a href="{% url 'admin_student_import_template' %}">Excel template</a>.
+            Required columns: <code>first_name</code>, <code>last_name</code>, <code>email</code>.
+            All imported students are placed in the department, year, and semester you select below.
+        </p>
+
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+            <div class="adm-form-grid">
+                <div class="adm-field adm-field-full">
+                    <label for="id_file">Excel file</label>
+                    {{ form.file }}
+                    {% if form.file.errors %}<span class="adm-field-error">{{ form.file.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="adm-field adm-field-full">
+                    <label for="id_department">Department</label>
+                    {{ form.department }}
+                    {% if form.department.errors %}<span class="adm-field-error">{{ form.department.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="adm-field">
+                    <label for="id_year">Year</label>
+                    {{ form.year }}
+                    {% if form.year.errors %}<span class="adm-field-error">{{ form.year.errors.0 }}</span>{% endif %}
+                </div>
+                <div class="adm-field">
+                    <label for="id_semester">Semester</label>
+                    {{ form.semester }}
+                    {% if form.semester.errors %}<span class="adm-field-error">{{ form.semester.errors.0 }}</span>{% endif %}
+                </div>
+            </div>
+
+            <div class="adm-form-actions">
+                <button type="submit" class="adm-btn adm-btn-primary">
+                    <i class="bi bi-upload"></i> Import Students
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{% include "admin/partials/student_academic_filter_script.html" %}
+{% endblock %}

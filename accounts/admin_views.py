@@ -1,3 +1,5 @@
+from io import BytesIO
+
 from django.contrib import messages
 
 from django.contrib.auth import get_user_model
@@ -8,11 +10,15 @@ from django.core.paginator import Paginator
 
 from django.db.models import Count, Q
 
+from django.http import HttpResponse
+
 from django.shortcuts import get_object_or_404, redirect, render
 
 from django.utils import timezone
 
 from django.views.decorators.http import require_POST
+
+from openpyxl import Workbook
 
 
 
@@ -21,8 +27,12 @@ from accounts.decorators import admin_required
 from accounts.forms import (
     CollegeClassForm,
     ComposeMessageForm,
+    CreateStudentForm,
     CreateTeacherForm,
+    EditStudentForm,
     EditTeacherForm,
+    StudentFilterForm,
+    StudentImportForm,
     TeacherFilterForm,
 )
 
@@ -48,6 +58,11 @@ from accounts.models import (
 
 from accounts.services.email_service import send_admin_message_email
 
+from accounts.services.student_service import (
+    create_student_account,
+    import_students_from_excel,
+    update_student_profile,
+)
 from accounts.services.user_service import (
     create_teacher_account,
     log_user_status_change,
@@ -241,9 +256,12 @@ def admin_teachers(request):
     paginator = Paginator(teachers, 15)
     page = paginator.get_page(request.GET.get('page'))
 
+    new_teacher_credentials = request.session.pop('new_teacher_credentials', None)
+
     ctx.update({
         'filter_form': filter_form,
         'teachers_page': page,
+        'new_teacher_credentials': new_teacher_credentials,
     })
     return render(request, 'admin/teachers.html', ctx)
 
@@ -266,12 +284,15 @@ def admin_teacher_create(request):
                     subjects=list(form.cleaned_data.get('subjects') or []),
                     performed_by=request.user,
                 )
+                request.session['new_teacher_credentials'] = {
+                    'name': user.display_name,
+                    'email': user.email,
+                    'username': user.username,
+                    'password': temp_password,
+                }
                 messages.success(
                     request,
-                    (
-                        f'Teacher account created for {user.display_name}. '
-                        f'Username: {user.username}. Welcome email sent to {user.email}.'
-                    ),
+                    f'Teacher account created for {user.display_name}. Login details are shown below.',
                 )
                 return redirect('admin_teachers')
             except ValueError as exc:
@@ -347,7 +368,213 @@ def admin_teacher_toggle(request, teacher_id):
     return redirect(request.POST.get('next') or 'admin_teachers')
 
 
+@login_required(login_url='/accounts/login/')
+@admin_required
+def admin_students(request):
+    ctx = _admin_context(request, 'students')
+    filter_form = StudentFilterForm(request.GET or None)
 
+    students = Student.objects.select_related(
+        'user',
+        'year',
+        'year__department',
+        'semester',
+    ).filter(user__role='student').order_by('-user__date_joined')
+
+    if filter_form.is_valid():
+        q = filter_form.cleaned_data.get('q', '').strip()
+        status = filter_form.cleaned_data.get('status')
+        department = filter_form.cleaned_data.get('department')
+        year = filter_form.cleaned_data.get('year')
+        semester = filter_form.cleaned_data.get('semester')
+
+        if q:
+            students = students.filter(
+                Q(user__first_name__icontains=q)
+                | Q(user__last_name__icontains=q)
+                | Q(user__email__icontains=q)
+                | Q(user__username__icontains=q)
+            )
+        if status == 'active':
+            students = students.filter(user__is_active=True)
+        elif status == 'inactive':
+            students = students.filter(user__is_active=False)
+        if department:
+            students = students.filter(year__department=department)
+        if year:
+            students = students.filter(year=year)
+        if semester:
+            students = students.filter(semester=semester)
+
+    paginator = Paginator(students, 15)
+    page = paginator.get_page(request.GET.get('page'))
+
+    ctx.update({
+        'filter_form': filter_form,
+        'students_page': page,
+        'new_student_credentials': request.session.pop('new_student_credentials', None),
+        'import_summary': request.session.pop('student_import_summary', None),
+    })
+    return render(request, 'admin/students.html', ctx)
+
+
+@login_required(login_url='/accounts/login/')
+@admin_required
+def admin_student_create(request):
+    ctx = _admin_context(request, 'students')
+
+    if request.method == 'POST':
+        form = CreateStudentForm(request.POST)
+        if form.is_valid():
+            try:
+                student, temp_password = create_student_account(
+                    first_name=form.cleaned_data['first_name'],
+                    last_name=form.cleaned_data['last_name'],
+                    email=form.cleaned_data['email'],
+                    year=form.cleaned_data['year'],
+                    semester=form.cleaned_data['semester'],
+                    performed_by=request.user,
+                )
+                user = student.user
+                request.session['new_student_credentials'] = {
+                    'name': user.display_name,
+                    'email': user.email,
+                    'username': user.username,
+                    'password': temp_password,
+                }
+                messages.success(
+                    request,
+                    f'Student account created for {user.display_name}. Login details are shown below.',
+                )
+                return redirect('admin_students')
+            except ValueError as exc:
+                messages.error(request, str(exc))
+    else:
+        form = CreateStudentForm()
+
+    ctx['form'] = form
+    return render(request, 'admin/student_form.html', ctx)
+
+
+@login_required(login_url='/accounts/login/')
+@admin_required
+def admin_student_import(request):
+    ctx = _admin_context(request, 'students')
+
+    if request.method == 'POST':
+        form = StudentImportForm(request.POST, request.FILES)
+        if form.is_valid():
+            result = import_students_from_excel(
+                form.cleaned_data['file'],
+                year=form.cleaned_data['year'],
+                semester=form.cleaned_data['semester'],
+                performed_by=request.user,
+            )
+            request.session['student_import_summary'] = result
+            if result['created']:
+                messages.success(
+                    request,
+                    f"Imported {result['created']} student(s) into "
+                    f"{form.cleaned_data['department'].code} — "
+                    f"Year {form.cleaned_data['year'].number}, "
+                    f"Semester {form.cleaned_data['semester'].number}.",
+                )
+            if result['skipped']:
+                messages.warning(
+                    request,
+                    f"{result['skipped']} row(s) were skipped. Review the import summary below.",
+                )
+            if not result['created'] and not result['skipped']:
+                messages.error(request, 'No student rows were found in the uploaded file.')
+            return redirect('admin_students')
+    else:
+        form = StudentImportForm()
+
+    ctx['form'] = form
+    return render(request, 'admin/student_import.html', ctx)
+
+
+@login_required(login_url='/accounts/login/')
+@admin_required
+def admin_student_import_template(request):
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = 'Students'
+    sheet.append(['first_name', 'last_name', 'email'])
+    sheet.append(['Jane', 'Doe', 'jane.doe@example.com'])
+
+    buffer = BytesIO()
+    workbook.save(buffer)
+    buffer.seek(0)
+
+    response = HttpResponse(
+        buffer.getvalue(),
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = 'attachment; filename="student_import_template.xlsx"'
+    return response
+
+
+@login_required(login_url='/accounts/login/')
+@admin_required
+def admin_student_detail(request, student_id):
+    ctx = _admin_context(request, 'students')
+    student = get_object_or_404(
+        Student.objects.select_related('user', 'year', 'year__department', 'semester'),
+        pk=student_id,
+        user__role='student',
+    )
+    ctx['student'] = student
+    return render(request, 'admin/student_detail.html', ctx)
+
+
+@login_required(login_url='/accounts/login/')
+@admin_required
+def admin_student_edit(request, student_id):
+    ctx = _admin_context(request, 'students')
+    student = get_object_or_404(
+        Student.objects.select_related('user', 'year', 'year__department', 'semester'),
+        pk=student_id,
+        user__role='student',
+    )
+
+    if request.method == 'POST':
+        form = EditStudentForm(request.POST, student=student)
+        if form.is_valid():
+            try:
+                update_student_profile(
+                    student,
+                    first_name=form.cleaned_data['first_name'],
+                    last_name=form.cleaned_data['last_name'],
+                    email=form.cleaned_data['email'],
+                    year=form.cleaned_data['year'],
+                    semester=form.cleaned_data['semester'],
+                    performed_by=request.user,
+                )
+                messages.success(request, f'Student profile updated for {student.user.display_name}.')
+                return redirect('admin_student_detail', student_id=student.pk)
+            except ValueError as exc:
+                messages.error(request, str(exc))
+    else:
+        form = EditStudentForm(student=student)
+
+    ctx.update({'form': form, 'student': student})
+    return render(request, 'admin/student_edit.html', ctx)
+
+
+@login_required(login_url='/accounts/login/')
+@admin_required
+@require_POST
+def admin_student_toggle(request, student_id):
+    student = get_object_or_404(Student, pk=student_id, user__role='student')
+    user = student.user
+    user.is_active = not user.is_active
+    user.save(update_fields=['is_active'])
+    log_user_status_change(user, user.is_active, request.user)
+
+    status = 'activated' if user.is_active else 'deactivated'
+    messages.success(request, f'{user.display_name} has been {status}.')
+    return redirect(request.POST.get('next') or 'admin_students')
 
 
 @login_required(login_url='/accounts/login/')

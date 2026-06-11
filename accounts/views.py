@@ -158,18 +158,14 @@ def student_dashboard(request):
     })
 
 
-@login_required(login_url='/accounts/login/')
-def teacher_dashboard(request):
-    if request.user.role != 'teacher':
-        return redirect('login')
-
+def _teacher_portal_context(request):
     full_name = request.user.get_full_name().strip()
     if full_name:
         teacher_name = full_name
         if not full_name.lower().startswith(('mr.', 'ms.', 'mrs.', 'dr.')):
             teacher_name = f'Ms. {full_name}'
     else:
-        teacher_name = 'Ms. Priya Sharma'
+        teacher_name = request.user.username
 
     hour = timezone.localtime(timezone.now()).hour
     if hour < 12:
@@ -179,18 +175,59 @@ def teacher_dashboard(request):
     else:
         greeting = 'Good Evening'
 
-    return render(request, 'teacher_dashboard.html', {
+    return {
         'greeting': greeting,
         'teacher_name': teacher_name,
         'teacher_short_name': teacher_name.replace('Ms. ', '').replace('Mr. ', '').split()[0],
+    }
+
+
+@login_required(login_url='/accounts/login/')
+def teacher_dashboard(request):
+    if request.user.role != 'teacher':
+        return redirect('login')
+
+    from accounts.services.student_service import get_students_for_teacher
+
+    teacher = getattr(request.user, 'teacher_profile', None)
+    if teacher is None:
+        return redirect('login')
+
+    students_qs = get_students_for_teacher(teacher).filter(user__is_active=True)
+    semester_count = teacher.subject_assignments.values('subject__semester_id').distinct().count()
+
+    ctx = _teacher_portal_context(request)
+    ctx.update({
         'stats': {
-            'classes': 6,
-            'students': 148,
+            'classes': semester_count,
+            'students': students_qs.count(),
             'attendance_pct': 87,
             'assignments': 12,
             'notes': 24,
         },
     })
+    return render(request, 'teacher_dashboard.html', ctx)
+
+
+@login_required(login_url='/accounts/login/')
+def teacher_students(request):
+    if request.user.role != 'teacher':
+        return redirect('login')
+
+    from accounts.services.student_service import get_students_for_teacher
+
+    teacher = getattr(request.user, 'teacher_profile', None)
+    if teacher is None:
+        return redirect('login')
+
+    students = get_students_for_teacher(teacher).filter(user__is_active=True)
+
+    ctx = _teacher_portal_context(request)
+    ctx.update({
+        'students': students,
+        'active_nav': 'students',
+    })
+    return render(request, 'teacher_students.html', ctx)
 
 
 @login_required(login_url='/accounts/login/')

@@ -219,6 +219,7 @@ class ActivityLog(models.Model):
     ACTION_USER_ACTIVATED = 'user_activated'
     ACTION_USER_DEACTIVATED = 'user_deactivated'
     ACTION_TEACHER_UPDATED = 'teacher_updated'
+    ACTION_STUDENT_UPDATED = 'student_updated'
     ACTION_CLASS_CREATED = 'class_created'
     ACTION_TEACHER_ASSIGNED = 'teacher_assigned'
     ACTION_STUDENT_ENROLLED = 'student_enrolled'
@@ -229,6 +230,7 @@ class ActivityLog(models.Model):
         (ACTION_USER_ACTIVATED, 'User activated'),
         (ACTION_USER_DEACTIVATED, 'User deactivated'),
         (ACTION_TEACHER_UPDATED, 'Teacher updated'),
+        (ACTION_STUDENT_UPDATED, 'Student updated'),
         (ACTION_CLASS_CREATED, 'Class created'),
         (ACTION_TEACHER_ASSIGNED, 'Teacher assigned'),
         (ACTION_STUDENT_ENROLLED, 'Student enrolled'),

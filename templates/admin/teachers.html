@@ -7,6 +7,8 @@
 {% endblock %}
 
 {% block dashboard_content %}
+{% include "admin/partials/teacher_credentials_banner.html" %}
+
 <div class="adm-page-head">
     <div>
         <h2 class="tch-section-title" style="margin:0;">Teacher Management</h2>
@@ -96,4 +98,22 @@
         {% endif %}
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+{% if new_teacher_credentials %}
+<script>
+document.querySelectorAll('.adm-copy-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+        var el = document.getElementById(btn.getAttribute('data-copy-target'));
+        if (!el) return;
+        navigator.clipboard.writeText(el.textContent.trim()).then(function () {
+            var icon = btn.querySelector('i');
+            icon.className = 'bi bi-check2';
+            setTimeout(function () { icon.className = 'bi bi-clipboard'; }, 1500);
+        });
+    });
+});
+</script>
+{% endif %}
 {% endblock %}

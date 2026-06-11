@@ -24,7 +24,7 @@
             </div>
             <div class="tch-stat-count">{{ stats.students }}</div>
             <div class="tch-stat-label">Students</div>
-            <span class="tch-stat-btn" style="opacity:.6;cursor:default;">Coming soon</span>
+            <a href="{% url 'admin_students' %}" class="tch-stat-btn">Manage</a>
         </article>
         <article class="tch-stat-card green">
             <div class="tch-stat-top">
@@ -63,11 +63,18 @@
                 <p>Add a new teacher account</p>
             </div>
         </a>
-        <a href="{% url 'admin_class_create' %}" class="tch-action-card">
-            <div class="tch-action-icon"><i class="bi bi-plus-circle"></i></div>
+        <a href="{% url 'admin_student_create' %}" class="tch-action-card">
+            <div class="tch-action-icon"><i class="bi bi-person-plus"></i></div>
             <div>
-                <h3>Create Class</h3>
-                <p>Set up a new class section</p>
+                <h3>Create Student</h3>
+                <p>Add a new student account</p>
+            </div>
+        </a>
+        <a href="{% url 'admin_student_import' %}" class="tch-action-card">
+            <div class="tch-action-icon"><i class="bi bi-upload"></i></div>
+            <div>
+                <h3>Bulk Import</h3>
+                <p>Upload students from Excel</p>
             </div>
         </a>
         <a href="{% url 'admin_messages_compose' %}" class="tch-action-card">

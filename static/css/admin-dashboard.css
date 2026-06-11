@@ -76,6 +76,21 @@
   font-size: 0.82rem;
 }
 
+.adm-filter-bar-wide {
+  flex-wrap: wrap;
+}
+
+.adm-import-errors {
+  margin: 0.75rem 0 0;
+  padding-left: 1.1rem;
+  color: #92400e;
+  font-size: 0.85rem;
+}
+
+.adm-import-errors li + li {
+  margin-top: 0.35rem;
+}
+
 /* Alerts */
 .adm-alerts {
   display: flex;
@@ -116,6 +131,74 @@
   background: #dbeafe;
   color: #1e40af;
   border: 1px solid #bfdbfe;
+}
+
+.adm-credentials-panel {
+  margin-bottom: 1.25rem;
+  padding: 1.25rem 1.35rem;
+  border-radius: 12px;
+  border: 1px solid #86efac;
+  background: linear-gradient(180deg, #f0fdf4 0%, #ecfdf5 100%);
+}
+
+.adm-credentials-head {
+  margin-bottom: 1rem;
+}
+
+.adm-credentials-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #14532d;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.adm-credentials-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0;
+}
+
+.adm-credentials-grid > div {
+  margin: 0;
+}
+
+.adm-credentials-grid dt {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #166534;
+  margin-bottom: 0.35rem;
+}
+
+.adm-credentials-grid dd {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.adm-credentials-value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #14532d;
+  background: #fff;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 0.45rem 0.65rem;
+  word-break: break-all;
+}
+
+@media (max-width: 900px) {
+  .adm-credentials-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Buttons */
